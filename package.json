@@ -25,10 +25,12 @@
   "scripts": {
     "prepare": "npx simple-git-hooks",
     "lint": "prettier --check .",
-    "format": "npx prettier . --write",
+    "format": "npm run toc && npx prettier . --write",
+    "toc": "doctoc --github README.md src",
     "test": "echo 1"
   },
   "exports": {
+    ".": "./src/index.ts",
     "./Image": "./src/Image/index.ts",
     "./StructuredText": "./src/StructuredText/index.ts",
     "./Seo": "./src/Seo/index.ts",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "astro": "^4.13.1",
+    "doctoc": "^2.2.1",
     "np": "^10.0.7",
     "prettier": "^3.3.3",
     "prettier-plugin-astro": "^0.14.1",

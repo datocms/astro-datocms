@@ -1,6 +1,6 @@
 # Structured text
 
-`StructuredText />` is a Svelte component that you can use to render the value contained inside a DatoCMS [Structured Text field type](https://www.datocms.com/docs/structured-text/dast).
+`<StructuredText />` is an Astro component that you can use to render the value contained inside a DatoCMS [Structured Text field type](https://www.datocms.com/docs/structured-text/dast).
 
 ### Table of contents
 
@@ -21,19 +21,17 @@
 Import the component like this:
 
 ```js
-import { StructuredText } from '@datocms/svelte';
+import { StructuredText } from '@datocms/astro/StructuredText';
 ```
 
 ## Basic usage
 
-```svelte
-<script>
+```astro
+---
+import { StructuredText } from '@datocms/astro/StructuredText';
+import { executeQuery } from '@datocms/cda-client';
 
-import { onMount } from 'svelte';
-
-import { StructuredText } from '@datocms/svelte';
-
-const query = `
+const query = gql`
   query {
     blogPost {
       title
@@ -44,30 +42,12 @@ const query = `
   }
 `;
 
-export let data = null;
-
-onMount(async () => {
-  const response = await fetch('https://graphql.datocms.com/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: "Bearer AN_API_TOKEN",
-    },
-    body: JSON.stringify({ query })
-  })
-
-  const json = await response.json()
-
-  data = json.data;
-});
-
-</script>
+const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+---
 
 <article>
-  {#if data}
-    <h1>{{ data.blogPost.title }}</h1>
-    <StructuredText data={data.blogPost.content} />
-  {/if}
+  <h1>{data.blogPost.title}</h1>
+  <StructuredText data={data.blogPost.content} />
 </article>
 ```
 
@@ -84,20 +64,16 @@ You need to use custom components in the following cases:
 
 Here is an example using custom components for blocks, inline and item links. Take a look at the [test fixtures](https://github.com/datocms/datocms-svelte/tree/main/src/lib/components/StructuredText/__tests__/__fixtures__) to see examples on how to implement these components.
 
-```svelte
-<script>
-
-import { onMount } from 'svelte';
-
+```astro
+---
 import { isBlock, isInlineItem, isItemLink } from 'datocms-structured-text-utils';
+import { StructuredText } from '@datocms/astro/StructuredText';
 
-import { StructuredText } from '@datocms/svelte';
+import Block from '~/components/Block/index.astro';
+import InlineItem from '~/components/InlineItem/index.astro';
+import ItemLink from '~/components/ItemLink/index.astro';
 
-import Block from './Block.svelte';
-import InlineItem from './InlineItem.svelte';
-import ItemLink from './ItemLink.svelte';
-
-const query = `
+const query = gql`
   query {
     blogPost {
       title
@@ -116,9 +92,7 @@ const query = `
           ... on ImageRecord {
             id
             image {
-              responsiveImage(
-                imgixParams: { fit: crop, w: 300, h: 300, auto: format }
-              ) {
+              responsiveImage(imgixParams: { fit: crop, w: 300, h: 300, auto: format }) {
                 srcSet
                 webpSrcSet
                 sizes
@@ -138,37 +112,19 @@ const query = `
   }
 `;
 
-export let data = null;
-
-onMount(async () => {
-  const response = await fetch('https://graphql.datocms.com/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: "Bearer AN_API_TOKEN",
-    },
-    body: JSON.stringify({ query })
-  })
-
-  const json = await response.json()
-
-  data = json.data;
-});
-
-</script>
+const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
+---
 
 <article>
-  {#if data}
-    <h1>{{ data.blogPost.title }}</h1>
-    <datocms-structured-text
-      data={data.blogPost.content}
-      components={[
-        [isInlineItem, InlineItem],
-        [isItemLink, ItemLink],
-        [isBlock, Block]
-      ]}
-    />
-  {/if}
+  <h1>{blogPost.title}</h1>
+  <StructuredText
+    data={blogPost.content}
+    components={[
+      [isInlineItem, InlineItem],
+      [isItemLink, ItemLink],
+      [isBlock, Block],
+    ]}
+  />
 </article>
 ```
 
@@ -179,30 +135,20 @@ onMount(async () => {
 - For `heading` nodes, you might want to add an anchor;
 - For `code` nodes, you might want to use a custom syntax highlighting component;
 
-In this case, you can easily override default rendering rules with the `components` props. See test fixtures for example implementations of custom components (e.g. [this special heading component](https://github.com/datocms/datocms-svelte/blob/main/src/lib/components/StructuredText/__tests__/__fixtures__/IncreasedLevelHeading.svelte)).
+In this case, you can easily override default rendering rules with the `components` props.
 
-```svelte
-<script>
-	import { isHeading, isCode } from 'datocms-structured-text-utils';
+```astro
+---
+import { isHeading } from 'datocms-structured-text-utils';
+import HeadingWithAnchorLink from '~/components/HeadingWithAnchorLink/index.astro';
+---
 
-	import Heading from './Heading.svelte';
-	import Code from './Code.svelte';
-
-	export let data;
-</script>
-
-<StructuredText
-	data={data.blogPost.content}
-	components={[
-		[isHeading, Heading],
-		[isCode, Code]
-	]}
-/>
+<StructuredText data={blogPost.content} components={[[isHeading, HeadingWithAnchorLink]]} />
 ```
 
 ## Props
 
-| prop       | type                                                                                                        | required                                                                  | description                                                                                      | default |
-| ---------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------- |
-| data       | `StructuredText \| DastNode`                                                                                | :white_check_mark:                                                        | The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from DatoCMS |         |
-| components | [`PredicateComponentTuple[] \| null`](https://github.com/datocms/datocms-svelte/blob/main/src/lib/index.ts) | Only required if data contain `block`, `inline_item` or `item_link` nodes | Array of tuples formed by a predicate function and custom component                              | `[]`    |
+| prop       | type                                                                                                                     | required                                                                  | description                                                                                      | default |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------- |
+| data       | `StructuredText \| DastNode`                                                                                             | :white_check_mark:                                                        | The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from DatoCMS |         |
+| components | [`PredicateComponentTuple[] \| null`](https://github.com/datocms/astro-datocms/blob/main/src/StructuredText/types.ts#L6) | Only required if data contain `block`, `inline_item` or `item_link` nodes | Array of tuples formed by a predicate function and custom component                              | `[]`    |
