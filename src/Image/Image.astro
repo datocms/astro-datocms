@@ -1,0 +1,72 @@
+---
+import { buildSrcSet } from './buildSrcSet';
+import type { ImageProps } from './types';
+
+interface Props extends ImageProps {}
+
+const {
+  data,
+  pictureClass,
+  pictureStyle,
+  imgClass,
+  imgStyle,
+  priority,
+  usePlaceholder = true,
+  sizes,
+  srcSetCandidates = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4],
+} = Astro.props;
+
+const placeholderStyle =
+  usePlaceholder && data.base64
+    ? {
+        backgroundImage: `url("${data.base64}")`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: '50% 50%',
+        color: 'transparent',
+      }
+    : usePlaceholder && data.bgColor
+      ? { backgroundColor: data.bgColor ?? undefined, color: 'transparent' }
+      : undefined;
+
+const { width } = data;
+
+const height = data.height ?? Math.round(data.aspectRatio ? width / data.aspectRatio : 0);
+
+const sizingStyle = {
+  aspectRatio: `${width} / ${height}`,
+  width: '100%',
+  maxWidth: `${width}px`,
+  height: 'auto',
+};
+---
+
+<picture class={pictureClass} style={pictureStyle}>
+  {
+    data.webpSrcSet && (
+      <source srcset={data.webpSrcSet} sizes={sizes ?? data.sizes ?? null} type="image/webp" />
+    )
+  }
+  <source
+    srcset={data.srcSet ?? buildSrcSet(data.src, data.width, srcSetCandidates) ?? null}
+    sizes={sizes ?? data.sizes ?? null}
+  />
+  {
+    data.src && (
+      <img
+        src={data.src}
+        alt={data.alt ?? ''}
+        title={data.title ?? null}
+        fetchpriority={priority ? 'high' : undefined}
+        loading={priority ? undefined : 'lazy'}
+        class={imgClass}
+        style={{
+          ...placeholderStyle,
+          ...sizingStyle,
+          ...imgStyle,
+        }}
+        data-testid="img"
+      />
+    )
+  }
+</picture>

@@ -1,0 +1,56 @@
+---
+import type { QueryListenerOptions } from './types';
+import { print } from '@0no-co/graphql.web';
+
+type Props<QueryResult, QueryVariables> = QueryListenerOptions<QueryResult, QueryVariables>;
+
+const { query, ...rest } = Astro.props;
+
+const stringifiedQuery = typeof query === 'object' ? print(query) : query;
+---
+
+<datocms-query-listener data-config={JSON.stringify({ ...rest, query: stringifiedQuery })}>
+</datocms-query-listener>
+
+<script>
+  import { subscribeToQuery as subscribeToQueryFn } from 'datocms-listen';
+  import type { QueryListenerOptions } from './types';
+
+  class QueryListener extends HTMLElement {
+    config: QueryListenerOptions<unknown, unknown>;
+    updatesReceived: number = 0;
+
+    constructor() {
+      super();
+
+      if (!this.dataset.config) {
+        throw new Error('Missing config');
+      }
+
+      this.config = JSON.parse(this.dataset.config);
+
+      import('datocms-listen').then(({ subscribeToQuery }) => {
+        this.run(subscribeToQuery);
+      });
+    }
+
+    run(subscribeToQuery: typeof subscribeToQueryFn) {
+      subscribeToQuery<unknown, unknown>({
+        ...this.config,
+        onUpdate: () => {
+          this.updatesReceived += 1;
+
+          if (this.updatesReceived > 1) {
+            document.location.reload();
+          }
+        },
+        onChannelError: (error) => {
+          console.error('[QueryListener]', error);
+        },
+      });
+    }
+  }
+
+  // Tell the browser to use our AstroHeart class for <astro-heart> elements.
+  customElements.define('datocms-query-listener', QueryListener);
+</script>

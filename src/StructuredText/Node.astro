@@ -1,0 +1,70 @@
+---
+import {
+  type Block,
+  type InlineItem,
+  type ItemLink,
+  type Node,
+  type StructuredText,
+  hasChildren,
+  isBlock,
+  isInlineItem,
+  isItemLink,
+} from 'datocms-structured-text-utils';
+
+import {
+  defaultComponents,
+  throwRenderErrorForMissingBlock,
+  throwRenderErrorForMissingComponent,
+  throwRenderErrorForMissingLink,
+} from './utils';
+
+import type { PredicateComponentTuple } from './types';
+
+interface Props {
+  node: Node;
+  blocks: StructuredText['blocks'];
+  links: StructuredText['links'];
+  components: PredicateComponentTuple[];
+}
+
+const { node, blocks, links, components = [] } = Astro.props;
+
+const findBlock = (node: Block, blocks: StructuredText['blocks']) =>
+  (blocks || []).find(({ id }) => id === node.item);
+
+const findLink = (node: ItemLink | InlineItem, links: StructuredText['links']) =>
+  (links || []).find(({ id }) => id === node.item);
+
+const block = isBlock(node) && (findBlock(node, blocks) || throwRenderErrorForMissingBlock(node));
+
+const link =
+  (isItemLink(node) && (findLink(node, links) || throwRenderErrorForMissingLink(node))) ||
+  (isInlineItem(node) && (findLink(node, links) || throwRenderErrorForMissingLink(node)));
+
+const predicateComponentTuple =
+  [...components, ...defaultComponents].find(([predicate, component]) => predicate(node)) ||
+  throwRenderErrorForMissingComponent(node);
+
+const Component = (predicateComponentTuple ?? [])[1];
+---
+
+<>
+  {
+    Component &&
+      (isBlock(node) ? (
+        <Component {node} {block} />
+      ) : isInlineItem(node) ? (
+        <Component {node} {link} />
+      ) : isItemLink(node) ? (
+        <Component {node} {link}>
+          {hasChildren(node) &&
+            node.children.map((child) => <Astro.self node={child} {blocks} {links} {components} />)}
+        </Component>
+      ) : (
+        <Component {node}>
+          {hasChildren(node) &&
+            node.children.map((child) => <Astro.self node={child} {blocks} {links} {components} />)}
+        </Component>
+      ))
+  }
+</>

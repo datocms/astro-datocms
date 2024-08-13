@@ -1,0 +1,14 @@
+---
+import type { Blockquote } from 'datocms-structured-text-utils';
+
+interface Props {
+  node: Blockquote;
+}
+
+const { node } = Astro.props;
+---
+
+<blockquote>
+  <slot />
+  <footer>{node.attribution}</footer>
+</blockquote>

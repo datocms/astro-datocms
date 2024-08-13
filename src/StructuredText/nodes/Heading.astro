@@ -1,0 +1,14 @@
+---
+import type { Heading } from 'datocms-structured-text-utils';
+
+interface Props {
+  node: Heading;
+}
+
+const { node } = Astro.props;
+
+const { level = 1 } = node;
+const Element = `h${level}`;
+---
+
+<Element><slot /></Element>

@@ -1,0 +1,56 @@
+---
+import type { Span } from 'datocms-structured-text-utils';
+import Lines from '../Lines.astro';
+
+interface Props {
+  node: Span;
+}
+
+const { node } = Astro.props;
+
+const { type, value, marks } = node;
+
+const [mark, ...otherMarks] = marks ?? [];
+---
+
+{
+  !mark ? (
+    <Lines lines={node.value.split(/\n/)} />
+  ) : mark === 'emphasis' ? (
+    <em>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </em>
+  ) : mark === 'highlight' ? (
+    <mark>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </mark>
+  ) : mark === 'strikethrough' ? (
+    <del>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </del>
+  ) : mark === 'strong' ? (
+    <strong>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </strong>
+  ) : mark === 'underline' ? (
+    <u>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </u>
+  ) : mark === 'code' ? (
+    <code>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </code>
+  ) : undefined
+}

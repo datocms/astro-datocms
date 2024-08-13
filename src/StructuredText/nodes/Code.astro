@@ -1,0 +1,13 @@
+---
+import { Code as AstroCode } from 'astro:components';
+import type { Code as CodeNode } from 'datocms-structured-text-utils';
+
+interface Props {
+  // https://www.datocms.com/docs/structured-text/dast#code
+  node: CodeNode;
+}
+
+const { node } = Astro.props;
+---
+
+<AstroCode code={node.code} lang={node.language as 'js'} />

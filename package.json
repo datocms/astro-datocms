@@ -1,0 +1,62 @@
+{
+  "name": "@datocms/astro",
+  "description": "A set of components and utilities to work faster with DatoCMS in Astro projects.",
+  "type": "module",
+  "version": "0.1.13",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/datocms/astro-datocms.git"
+  },
+  "homepage": "https://github.com/datocms/astro-datocms",
+  "license": "MIT",
+  "author": "Stefano Verna <s.verna@datocms.com>",
+  "contributors": [
+    "Silvano Stralla <silvano@datocms.com>"
+  ],
+  "keywords": [
+    "astro",
+    "withastro",
+    "astro-component",
+    "datocms",
+    "typescript",
+    "ui"
+  ],
+  "scripts": {
+    "prepare": "npx simple-git-hooks",
+    "lint": "prettier --check .",
+    "format": "npx prettier . --write",
+    "test": "echo 1"
+  },
+  "exports": {
+    "./Image": "./src/Image/index.ts",
+    "./StructuredText": "./src/StructuredText/index.ts",
+    "./Seo": "./src/Seo/index.ts",
+    "./QueryListener": "./src/QueryListener/index.ts"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@0no-co/graphql.web": "^1.0.7",
+    "datocms-listen": "^1.0.0",
+    "datocms-structured-text-utils": "^4.0.1"
+  },
+  "peerDependencies": {
+    "astro": "*"
+  },
+  "devDependencies": {
+    "astro": "^4.13.1",
+    "np": "^10.0.7",
+    "prettier": "^3.3.3",
+    "prettier-plugin-astro": "^0.14.1",
+    "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.5.4"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run format"
+  }
+}

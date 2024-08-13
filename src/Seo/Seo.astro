@@ -1,0 +1,12 @@
+---
+import { renderMetaTagsToString } from './renderMetaTagsToString';
+import type { SeoOrFaviconTag, TitleMetaLinkTag } from './types';
+
+interface Props {
+  data: TitleMetaLinkTag[] | SeoOrFaviconTag[];
+}
+
+const { data } = Astro.props;
+---
+
+<Fragment set:html={renderMetaTagsToString(data)} />

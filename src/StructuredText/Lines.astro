@@ -1,0 +1,18 @@
+---
+interface Props {
+  lines: string[];
+}
+
+const { lines = [] } = Astro.props;
+
+const [first, ...rest] = lines;
+---
+
+{first}{
+  rest.length > 0 && (
+    <>
+      <br />
+      <Astro.self lines={rest} />
+    </>
+  )
+}

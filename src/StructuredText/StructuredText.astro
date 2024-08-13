@@ -1,0 +1,25 @@
+---
+import {
+  type StructuredText,
+  type Document,
+  isStructuredText,
+} from 'datocms-structured-text-utils';
+
+import Node from './Node.astro';
+import type { PredicateComponentTuple } from './types';
+
+interface Props {
+  data: StructuredText | Document | null;
+  components?: PredicateComponentTuple[];
+}
+
+const { data, components = [] } = Astro.props;
+
+const node = data != null && (isStructuredText(data) ? (data.value as Document) : data).document;
+
+const blocks = isStructuredText(data) ? data?.blocks : undefined;
+
+const links = isStructuredText(data) ? data?.links : undefined;
+---
+
+{node && <Node {node} {blocks} {links} {components} />}
