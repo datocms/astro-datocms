@@ -30,8 +30,8 @@ import ItemLinkComponent from './nodes/ItemLink.astro';
 
 import type {
   BlockComponents,
-  InlineItemComponents,
-  ItemLinkComponents,
+  InlineRecordComponents,
+  LinkToRecordComponents,
   NodeOverrides,
   AstroComponent,
   MarkOverrides,
@@ -44,8 +44,8 @@ interface Props {
   links?: DatocmsRecord[];
 
   blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
-  itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
-  inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
+  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
+  inlineRecordComponents?: InlineRecordComponents<DatocmsRecord, DatocmsRecord>;
 
   nodeOverrides?: NodeOverrides;
   markOverrides?: MarkOverrides;
@@ -57,8 +57,8 @@ const {
   blocks,
   links,
   blockComponents,
-  itemLinkComponents,
-  inlineItemComponents,
+  linkToRecordComponents,
+  inlineRecordComponents,
   nodeOverrides,
   markOverrides,
 } = rest;
@@ -118,9 +118,9 @@ const Component = otherNodeComponents[node.type];
     isBlock(node) ? (
       <Component {node} block={findRecordInBlocks(node)} {blockComponents} />
     ) : isInlineItem(node) ? (
-      <Component {node} record={findRecordInLinks(node)} {inlineItemComponents} />
+      <Component {node} record={findRecordInLinks(node)} {inlineRecordComponents} />
     ) : isItemLink(node) ? (
-      <Component {node} record={findRecordInLinks(node)} {itemLinkComponents}>
+      <Component {node} record={findRecordInLinks(node)} {linkToRecordComponents}>
         {node.children.map((child) => (
           <Astro.self node={child} {...rest} />
         ))}

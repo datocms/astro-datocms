@@ -5,23 +5,23 @@ import {
   type ItemLink,
 } from 'datocms-structured-text-utils';
 
-import type { ItemLinkComponents } from '../types';
+import type { LinkToRecordComponents } from '../types';
 
 import { defaultMetaTransformer } from 'datocms-structured-text-generic-html-renderer';
 
 interface Props {
   node: ItemLink;
   record: DatocmsRecord;
-  itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
+  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
 }
 
-const { node, record, itemLinkComponents } = Astro.props;
+const { node, record, linkToRecordComponents } = Astro.props;
 
-const Component = itemLinkComponents?.[record.__typename];
+const Component = linkToRecordComponents?.[record.__typename];
 
 if (!Component) {
   throw new RenderError(
-    `The Structured Text document contains an 'itemLink' node, but no component for rendering it is specified in the itemLinkComponents prop!`,
+    `The Structured Text document contains an 'itemLink' node, but no component for rendering it is specified in the linkToRecordComponents prop!`,
     node,
   );
 }

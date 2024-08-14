@@ -63,8 +63,8 @@ You need to use custom components in the following cases:
 ### Custom components for blocks, inline records or links to records
 
 - Astro components passed in `blockComponents` will be used to render blocks and will receive a `block` prop containing the actual block data.
-- Astro components passed in `inlineItemComponents` will be used to render inline records and will receive a `record` prop containing the actual record.
-- Astro components passed in `itemLinkComponents` will be used to render links to records and will receive the following props: `node` (the actual `'inlineItem'` node), `record` (the record linked to the node), and `attrs` (the custom attributes for the link specified by the node).
+- Astro components passed in `inlineRecordComponents` will be used to render inline records and will receive a `record` prop containing the actual record.
+- Astro components passed in `linkToRecordComponents` will be used to render links to records and will receive the following props: `node` (the actual `'inlineItem'` node), `record` (the record linked to the node), and `attrs` (the custom attributes for the link specified by the node).
 
 ```astro
 ---
@@ -122,10 +122,10 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
       CtaRecord: Cta,
       NewsletterSignupRecord: NewsletterSignup,
     }}
-    inlineItemComponents={{
+    inlineRecordComponents={{
       TeamMemberRecord: InlineTeamMember,
     }}
-    itemLinkComponents={{
+    linkToRecordComponents={{
       TeamMemberRecord: LinkToTeamMember,
     }}
   />
@@ -159,11 +159,11 @@ import Code from '~/components/Code/index.astro';
 
 ## Props
 
-| prop                 | type                             | required           | description                                                                                                             |
-| -------------------- | -------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| data                 | `StructuredText \| DastNode`     | :white_check_mark: | The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from DatoCMS                        |
-| blockComponents      | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  |
-| itemLinkComponents   | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components |
-| inlineItemComponents | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components |
-| nodeOverrides        | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of DAST nodes to override, and the values are the Astro components            |
-| markOverrides        | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of `span` node marks to override, and the values are the Astro components     |
+| prop                   | type                             | required           | description                                                                                                             |
+| ---------------------- | -------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| data                   | `StructuredText \| DastNode`     | :white_check_mark: | The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from DatoCMS                        |
+| blockComponents        | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  |
+| linkToRecordComponents | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components |
+| inlineRecordComponents | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components |
+| nodeOverrides          | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of DAST nodes to override, and the values are the Astro components            |
+| markOverrides          | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of `span` node marks to override, and the values are the Astro components     |

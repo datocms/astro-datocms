@@ -12,8 +12,8 @@ import {
 import Node from './Node.astro';
 import type {
   BlockComponents,
-  InlineItemComponents,
-  ItemLinkComponents,
+  InlineRecordComponents,
+  LinkToRecordComponents,
   NodeOverrides,
   MarkOverrides,
 } from './types';
@@ -25,13 +25,19 @@ import type {
 // but it's currently not possible: https://github.com/withastro/roadmap/discussions/601#discussioncomment-10333959
 
 interface Props {
+  /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
   data: StructuredText<DatocmsRecord, DatocmsRecord> | Document | DastNode | null | undefined;
 
+  /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
   blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
-  itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
-  inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
+  /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
+  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
+  /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
+  inlineRecordComponents?: InlineRecordComponents<DatocmsRecord, DatocmsRecord>;
 
+  /** An object in which the keys are the types of DAST nodes to override, and the values are the Astro components */
   nodeOverrides?: NodeOverrides;
+  /** An object in which the keys are the types of `span` node marks to override, and the values are the Astro components */
   markOverrides?: MarkOverrides;
 }
 

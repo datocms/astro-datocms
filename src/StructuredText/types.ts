@@ -8,12 +8,12 @@ export type BlockComponents<R1 extends DatocmsRecord, R2 extends DatocmsRecord> 
   AstroComponent
 >;
 
-export type ItemLinkComponents<R1 extends DatocmsRecord, R2 extends DatocmsRecord> = Record<
+export type LinkToRecordComponents<R1 extends DatocmsRecord, R2 extends DatocmsRecord> = Record<
   R2['__typename'],
   AstroComponent
 >;
 
-export type InlineItemComponents<R1 extends DatocmsRecord, R2 extends DatocmsRecord> = Record<
+export type InlineRecordComponents<R1 extends DatocmsRecord, R2 extends DatocmsRecord> = Record<
   R2['__typename'],
   AstroComponent
 >;
