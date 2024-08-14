@@ -11,6 +11,7 @@ import {
   isItemLink,
   RenderError,
   type NodeType,
+  isSpan,
 } from 'datocms-structured-text-utils';
 
 import Blockquote from './nodes/Blockquote.astro';
@@ -31,8 +32,9 @@ import type {
   BlockComponents,
   InlineItemComponents,
   ItemLinkComponents,
-  Overrides,
+  NodeOverrides,
   AstroComponent,
+  MarkOverrides,
 } from './types';
 
 interface Props {
@@ -44,13 +46,22 @@ interface Props {
   blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
   itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
   inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
-  overrides?: Overrides;
+
+  nodeOverrides?: NodeOverrides;
+  markOverrides?: MarkOverrides;
 }
 
 const { node, ...rest } = Astro.props;
 
-const { blocks, links, blockComponents, itemLinkComponents, inlineItemComponents, overrides } =
-  rest;
+const {
+  blocks,
+  links,
+  blockComponents,
+  itemLinkComponents,
+  inlineItemComponents,
+  nodeOverrides,
+  markOverrides,
+} = rest;
 
 function findRecordInBlocks(node: Block) {
   const record = (blocks || []).find(({ id }) => id === node.item);
@@ -96,7 +107,7 @@ const defaultComponents: Record<NodeType, AstroComponent> = {
 
 const otherNodeComponents: Record<NodeType, AstroComponent> = {
   ...defaultComponents,
-  ...overrides,
+  ...nodeOverrides,
 };
 
 const Component = otherNodeComponents[node.type];
@@ -114,6 +125,8 @@ const Component = otherNodeComponents[node.type];
           <Astro.self node={child} {...rest} />
         ))}
       </Component>
+    ) : isSpan(node) ? (
+      <Component {node} {markOverrides} />
     ) : (
       <Component {node}>
         {hasChildren(node) && node.children.map((child) => <Astro.self node={child} {...rest} />)}

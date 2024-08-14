@@ -139,7 +139,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
 - For `heading` nodes, you might want to add an anchor;
 - For `code` nodes, you might want to use a custom syntax highlighting component;
 
-In this case, you can easily override default rendering rules with the `overrides` prop.
+In this case, you can easily override default rendering rules with the `nodeOverrides` prop.
 
 ```astro
 ---
@@ -150,7 +150,7 @@ import Code from '~/components/Code/index.astro';
 
 <StructuredText
   data={blogPost.content}
-  components={{
+  nodeOverrides={{
     heading: HeadingWithAnchorLink,
     code: Code,
   }}
@@ -165,4 +165,5 @@ import Code from '~/components/Code/index.astro';
 | blockComponents      | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  |
 | itemLinkComponents   | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components |
 | inlineItemComponents | `Record<string, AstroComponent>` |                    | An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components |
-| overrides            | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of DAST nodes to override, and the values are the Astro components            |
+| nodeOverrides        | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of DAST nodes to override, and the values are the Astro components            |
+| markOverrides        | `Record<string, AstroComponent>` |                    | An object in which the keys are the types of `span` node marks to override, and the values are the Astro components     |

@@ -1,4 +1,4 @@
-import type { Record as DatocmsRecord, NodeType } from 'datocms-structured-text-utils';
+import type { Record as DatocmsRecord, Mark, NodeType } from 'datocms-structured-text-utils';
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export type AstroComponent = (props: any) => any;
@@ -18,4 +18,6 @@ export type InlineItemComponents<R1 extends DatocmsRecord, R2 extends DatocmsRec
   AstroComponent
 >;
 
-export type Overrides = Partial<Record<NodeType, AstroComponent>>;
+export type NodeOverrides = Partial<Record<NodeType, AstroComponent>>;
+
+export type MarkOverrides = Partial<Record<Mark, AstroComponent>>;

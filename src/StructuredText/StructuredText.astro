@@ -10,7 +10,13 @@ import {
 } from 'datocms-structured-text-utils';
 
 import Node from './Node.astro';
-import type { BlockComponents, InlineItemComponents, ItemLinkComponents, Overrides } from './types';
+import type {
+  BlockComponents,
+  InlineItemComponents,
+  ItemLinkComponents,
+  NodeOverrides,
+  MarkOverrides,
+} from './types';
 
 // It would be better to type this as:
 //
@@ -24,7 +30,9 @@ interface Props {
   blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
   itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
   inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
-  overrides?: Overrides;
+
+  nodeOverrides?: NodeOverrides;
+  markOverrides?: MarkOverrides;
 }
 
 const { data, ...rest } = Astro.props;

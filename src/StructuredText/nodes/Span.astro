@@ -1,56 +1,49 @@
 ---
-import type { Span } from 'datocms-structured-text-utils';
+import type { Mark, Span } from 'datocms-structured-text-utils';
 import Lines from '../Lines.astro';
+import type { MarkOverrides } from '../types';
 
 interface Props {
   node: Span;
+  markOverrides?: MarkOverrides;
 }
 
-const { node } = Astro.props;
+const { node, markOverrides } = Astro.props;
 
 const { type, value, marks } = node;
 
 const [mark, ...otherMarks] = marks ?? [];
+
+function markToComponent(mark: Mark) {
+  if (markOverrides && mark in markOverrides) {
+    return markOverrides[mark];
+  }
+
+  switch (mark) {
+    case 'emphasis':
+      return 'em';
+    case 'underline':
+      return 'u';
+    case 'strikethrough':
+      return 's';
+    case 'highlight':
+      return 'mark';
+    default:
+      return mark;
+  }
+}
+
+const MarkComponent = mark ? markToComponent(mark) : null;
 ---
 
 {
-  !mark ? (
+  MarkComponent ? (
+    <MarkComponent>
+      <Astro.self node={{ type, value, marks: otherMarks }}>
+        <slot />
+      </Astro.self>
+    </MarkComponent>
+  ) : (
     <Lines lines={node.value.split(/\n/)} />
-  ) : mark === 'emphasis' ? (
-    <em>
-      <Astro.self node={{ type, value, marks: otherMarks }}>
-        <slot />
-      </Astro.self>
-    </em>
-  ) : mark === 'highlight' ? (
-    <mark>
-      <Astro.self node={{ type, value, marks: otherMarks }}>
-        <slot />
-      </Astro.self>
-    </mark>
-  ) : mark === 'strikethrough' ? (
-    <del>
-      <Astro.self node={{ type, value, marks: otherMarks }}>
-        <slot />
-      </Astro.self>
-    </del>
-  ) : mark === 'strong' ? (
-    <strong>
-      <Astro.self node={{ type, value, marks: otherMarks }}>
-        <slot />
-      </Astro.self>
-    </strong>
-  ) : mark === 'underline' ? (
-    <u>
-      <Astro.self node={{ type, value, marks: otherMarks }}>
-        <slot />
-      </Astro.self>
-    </u>
-  ) : mark === 'code' ? (
-    <code>
-      <Astro.self node={{ type, value, marks: otherMarks }}>
-        <slot />
-      </Astro.self>
-    </code>
-  ) : undefined
+  )
 }
