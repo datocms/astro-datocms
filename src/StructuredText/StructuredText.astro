@@ -12,13 +12,18 @@ import {
 import Node from './Node.astro';
 import type { BlockComponents, InlineItemComponents, ItemLinkComponents, Overrides } from './types';
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-interface Props<R1 extends DatocmsRecord = any, R2 extends DatocmsRecord = any> {
-  data: StructuredText<R1, R2> | Document | DastNode | null | undefined;
+// It would be better to type this as:
+//
+// interface Props<R1 extends DatocmsRecord = any, R2 extends DatocmsRecord = any>
+//
+// but it's currently not possible: https://github.com/withastro/roadmap/discussions/601#discussioncomment-10333959
 
-  blockComponents?: BlockComponents<R1, R2>;
-  itemLinkComponents?: ItemLinkComponents<R1, R2>;
-  inlineItemComponents?: InlineItemComponents<R1, R2>;
+interface Props {
+  data: StructuredText<DatocmsRecord, DatocmsRecord> | Document | DastNode | null | undefined;
+
+  blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
+  itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
+  inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
   overrides?: Overrides;
 }
 
