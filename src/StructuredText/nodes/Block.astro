@@ -1,0 +1,27 @@
+---
+import {
+  type Record as DatocmsRecord,
+  RenderError,
+  type Block,
+} from 'datocms-structured-text-utils';
+import type { BlockComponents } from '../types';
+
+interface Props {
+  node: Block;
+  block: DatocmsRecord;
+  blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
+}
+
+const { node, block, blockComponents } = Astro.props;
+
+const Component = blockComponents?.[block.__typename];
+
+if (!Component) {
+  throw new RenderError(
+    `The Structured Text document contains a 'block' node, but no component for rendering it is specified in blockComponents prop!`,
+    node,
+  );
+}
+---
+
+<Component block={block} />

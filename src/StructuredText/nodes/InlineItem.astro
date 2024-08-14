@@ -1,0 +1,27 @@
+---
+import {
+  type Record as DatocmsRecord,
+  RenderError,
+  type InlineItem,
+} from 'datocms-structured-text-utils';
+import type { InlineItemComponents } from '../types';
+
+interface Props {
+  node: InlineItem;
+  record: DatocmsRecord;
+  inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
+}
+
+const { node, record, inlineItemComponents } = Astro.props;
+
+const Component = inlineItemComponents?.[record.__typename];
+
+if (!Component) {
+  throw new RenderError(
+    `The Structured Text document contains an 'inlineItem' node, but no component for rendering it is specified in the inlineItemComponents prop!`,
+    node,
+  );
+}
+---
+
+<Component {record} />

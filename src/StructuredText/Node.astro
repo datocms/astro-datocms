@@ -1,70 +1,112 @@
 ---
 import {
   type Block,
+  type Record as DatocmsRecord,
   type InlineItem,
   type ItemLink,
-  type Node,
-  type StructuredText,
+  type Node as DastNode,
   hasChildren,
   isBlock,
   isInlineItem,
   isItemLink,
+  RenderError,
 } from 'datocms-structured-text-utils';
 
-import {
-  defaultComponents,
-  throwRenderErrorForMissingBlock,
-  throwRenderErrorForMissingComponent,
-  throwRenderErrorForMissingLink,
-} from './utils';
+import Blockquote from './nodes/Blockquote.astro';
+import Code from './nodes/Code.astro';
+import Heading from './nodes/Heading.astro';
+import Link from './nodes/Link.astro';
+import List from './nodes/List.astro';
+import ListItem from './nodes/ListItem.astro';
+import Paragraph from './nodes/Paragraph.astro';
+import Root from './nodes/Root.astro';
+import Span from './nodes/Span.astro';
+import ThematicBreak from './nodes/ThematicBreak.astro';
+import BlockComponent from './nodes/Block.astro';
+import InlineItemComponent from './nodes/InlineItem.astro';
+import ItemLinkComponent from './nodes/ItemLink.astro';
 
-import type { PredicateComponentTuple } from './types';
+import type { BlockComponents, InlineItemComponents, ItemLinkComponents, Overrides } from './types';
 
 interface Props {
-  node: Node;
-  blocks: StructuredText['blocks'];
-  links: StructuredText['links'];
-  components: PredicateComponentTuple[];
+  node: DastNode;
+
+  blocks?: DatocmsRecord[];
+  links?: DatocmsRecord[];
+
+  blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
+  itemLinkComponents?: ItemLinkComponents<DatocmsRecord, DatocmsRecord>;
+  inlineItemComponents?: InlineItemComponents<DatocmsRecord, DatocmsRecord>;
+  overrides?: Overrides;
 }
 
-const { node, blocks, links, components = [] } = Astro.props;
+const { node, ...rest } = Astro.props;
 
-const findBlock = (node: Block, blocks: StructuredText['blocks']) =>
-  (blocks || []).find(({ id }) => id === node.item);
+const { blocks, links, blockComponents, itemLinkComponents, inlineItemComponents, overrides } =
+  rest;
 
-const findLink = (node: ItemLink | InlineItem, links: StructuredText['links']) =>
-  (links || []).find(({ id }) => id === node.item);
+function findRecordInBlocks(node: Block) {
+  const record = (blocks || []).find(({ id }) => id === node.item);
 
-const block = isBlock(node) && (findBlock(node, blocks) || throwRenderErrorForMissingBlock(node));
+  if (!record) {
+    throw new RenderError(
+      `The Structured Text document contains a 'block' node, but cannot find a record with ID ${node.item} inside data.blocks!`,
+      node,
+    );
+  }
 
-const link =
-  (isItemLink(node) && (findLink(node, links) || throwRenderErrorForMissingLink(node))) ||
-  (isInlineItem(node) && (findLink(node, links) || throwRenderErrorForMissingLink(node)));
+  return record;
+}
 
-const predicateComponentTuple =
-  [...components, ...defaultComponents].find(([predicate, component]) => predicate(node)) ||
-  throwRenderErrorForMissingComponent(node);
+function findRecordInLinks(node: ItemLink | InlineItem) {
+  const record = (links || []).find(({ id }) => id === node.item);
 
-const Component = (predicateComponentTuple ?? [])[1];
+  if (!record) {
+    throw new RenderError(
+      `The Structured Text document contains an '${node.type}' node, but cannot find a record with ID ${node.item} inside data.links!`,
+      node,
+    );
+  }
+
+  return record;
+}
+
+const defaultComponents: Overrides = {
+  paragraph: Paragraph,
+  root: Root,
+  span: Span,
+  link: Link,
+  list: List,
+  heading: Heading,
+  blockquote: Blockquote,
+  listItem: ListItem,
+  thematicBreak: ThematicBreak,
+  code: Code,
+  itemLink: ItemLinkComponent,
+  inlineItem: InlineItemComponent,
+  block: BlockComponent,
+};
+
+const otherNodeComponents: Overrides = { ...defaultComponents, ...overrides };
+const Component = otherNodeComponents[node.type];
 ---
 
 <>
   {
-    Component &&
-      (isBlock(node) ? (
-        <Component {node} {block} />
-      ) : isInlineItem(node) ? (
-        <Component {node} {link} />
-      ) : isItemLink(node) ? (
-        <Component {node} {link}>
-          {hasChildren(node) &&
-            node.children.map((child) => <Astro.self node={child} {blocks} {links} {components} />)}
-        </Component>
-      ) : (
-        <Component {node}>
-          {hasChildren(node) &&
-            node.children.map((child) => <Astro.self node={child} {blocks} {links} {components} />)}
-        </Component>
-      ))
+    isBlock(node) ? (
+      <Component {node} block={findRecordInBlocks(node)} {blockComponents} />
+    ) : isInlineItem(node) ? (
+      <Component {node} record={findRecordInLinks(node)} {inlineItemComponents} />
+    ) : isItemLink(node) ? (
+      <Component {node} record={findRecordInLinks(node)} {itemLinkComponents}>
+        {node.children.map((child) => (
+          <Astro.self node={child} {...rest} />
+        ))}
+      </Component>
+    ) : (
+      <Component {node}>
+        {hasChildren(node) && node.children.map((child) => <Astro.self node={child} {...rest} />)}
+      </Component>
+    )
   }
 </>

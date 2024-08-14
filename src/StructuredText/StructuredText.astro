@@ -1,25 +1,42 @@
 ---
 import {
-  type StructuredText,
+  type Node as DastNode,
   type Document,
+  type Record as DatocmsRecord,
+  type StructuredText,
+  isDocument,
+  isNode,
   isStructuredText,
 } from 'datocms-structured-text-utils';
 
 import Node from './Node.astro';
-import type { PredicateComponentTuple } from './types';
+import type { BlockComponents, InlineItemComponents, ItemLinkComponents, Overrides } from './types';
 
-interface Props {
-  data: StructuredText | Document | null;
-  components?: PredicateComponentTuple[];
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+interface Props<R1 extends DatocmsRecord = any, R2 extends DatocmsRecord = any> {
+  data: StructuredText<R1, R2> | Document | DastNode | null | undefined;
+
+  blockComponents?: BlockComponents<R1, R2>;
+  itemLinkComponents?: ItemLinkComponents<R1, R2>;
+  inlineItemComponents?: InlineItemComponents<R1, R2>;
+  overrides?: Overrides;
 }
 
-const { data, components = [] } = Astro.props;
+const { data, ...rest } = Astro.props;
 
-const node = data != null && (isStructuredText(data) ? (data.value as Document) : data).document;
+const node = !data
+  ? null
+  : isStructuredText(data) && isDocument(data.value)
+    ? data.value.document
+    : isDocument(data)
+      ? data.document
+      : isNode(data)
+        ? data
+        : undefined;
 
 const blocks = isStructuredText(data) ? data?.blocks : undefined;
 
 const links = isStructuredText(data) ? data?.links : undefined;
 ---
 
-{node && <Node {node} {blocks} {links} {components} />}
+{node && <Node {node} {blocks} {links} {...rest} />}
