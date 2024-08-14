@@ -69,6 +69,7 @@ You need to use custom components in the following cases:
 ```astro
 ---
 import { StructuredText } from '@datocms/astro/StructuredText';
+import { executeQuery } from '@datocms/cda-client';
 
 import Cta from '~/components/Cta/index.astro';
 import NewsletterSignup from '~/components/NewsletterSignup/index.astro';

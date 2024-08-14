@@ -31,4 +31,4 @@ const { meta } = node;
 const attrs = meta ? defaultMetaTransformer({ node, meta }) : {};
 ---
 
-<Component {node} {record} {attrs} />
+<Component {node} {record} {attrs}><slot /></Component>
