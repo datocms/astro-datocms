@@ -10,6 +10,7 @@ import {
   isInlineItem,
   isItemLink,
   RenderError,
+  type NodeType,
 } from 'datocms-structured-text-utils';
 
 import Blockquote from './nodes/Blockquote.astro';
@@ -26,7 +27,13 @@ import BlockComponent from './nodes/Block.astro';
 import InlineItemComponent from './nodes/InlineItem.astro';
 import ItemLinkComponent from './nodes/ItemLink.astro';
 
-import type { BlockComponents, InlineItemComponents, ItemLinkComponents, Overrides } from './types';
+import type {
+  BlockComponents,
+  InlineItemComponents,
+  ItemLinkComponents,
+  Overrides,
+  AstroComponent,
+} from './types';
 
 interface Props {
   node: DastNode;
@@ -71,7 +78,7 @@ function findRecordInLinks(node: ItemLink | InlineItem) {
   return record;
 }
 
-const defaultComponents: Overrides = {
+const defaultComponents: Record<NodeType, AstroComponent> = {
   paragraph: Paragraph,
   root: Root,
   span: Span,
@@ -87,7 +94,11 @@ const defaultComponents: Overrides = {
   block: BlockComponent,
 };
 
-const otherNodeComponents: Overrides = { ...defaultComponents, ...overrides };
+const otherNodeComponents: Record<NodeType, AstroComponent> = {
+  ...defaultComponents,
+  ...overrides,
+};
+
 const Component = otherNodeComponents[node.type];
 ---
 
