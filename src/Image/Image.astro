@@ -41,7 +41,7 @@ const sizingStyle = {
 };
 ---
 
-<picture class={pictureClass} style={pictureStyle}>
+<picture class={pictureClass} style={pictureStyle} data-datocms-image="true">
   {
     data.webpSrcSet && (
       <source srcset={data.webpSrcSet} sizes={sizes ?? data.sizes ?? null} type="image/webp" />
@@ -70,3 +70,33 @@ const sizingStyle = {
     )
   }
 </picture>
+
+<script>
+  function removeBackgroundStyles(element: HTMLElement) {
+    element.style.backgroundColor = '';
+    element.style.backgroundImage = '';
+  }
+
+  function setup() {
+    for (const pictureEl of [...document.querySelectorAll('picture[data-datocms-image=true]')]) {
+      const imgEl = pictureEl.querySelector('img');
+
+      if (!imgEl) {
+        return;
+      }
+
+      if (imgEl.complete) {
+        removeBackgroundStyles(imgEl);
+      } else {
+        imgEl.addEventListener('load', () => removeBackgroundStyles(imgEl));
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', setup);
+  document.addEventListener('astro:page-load', setup);
+
+  if (document.readyState === 'complete') {
+    setup();
+  }
+</script>
