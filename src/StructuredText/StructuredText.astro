@@ -10,13 +10,7 @@ import {
 } from 'datocms-structured-text-utils';
 
 import Node from './Node.astro';
-import type {
-  BlockComponents,
-  InlineRecordComponents,
-  LinkToRecordComponents,
-  NodeOverrides,
-  MarkOverrides,
-} from './types';
+import type { NodeOverrides, MarkOverrides, AstroComponent } from './types';
 
 // It would be better to type this as a generic:
 //
@@ -31,11 +25,11 @@ interface Props {
   data: StructuredText<DatocmsRecord, DatocmsRecord> | Document | DastNode | null | undefined;
 
   /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
-  blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
+  blockComponents?: Record<string, AstroComponent>;
   /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
-  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
+  linkToRecordComponents?: Record<string, AstroComponent>;
   /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
-  inlineRecordComponents?: InlineRecordComponents<DatocmsRecord, DatocmsRecord>;
+  inlineRecordComponents?: Record<string, AstroComponent>;
 
   /** An object in which the keys are the types of DAST nodes to override, and the values are the Astro components */
   nodeOverrides?: NodeOverrides;
