@@ -12,6 +12,7 @@
 - [Customization](#customization)
   - [Custom components for blocks, inline records or links to records](#custom-components-for-blocks-inline-records-or-links-to-records)
   - [Override default rendering of nodes](#override-default-rendering-of-nodes)
+  - [Strict props type checking](#strict-props-type-checking)
 - [Props](#props)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -129,7 +130,7 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
       TeamMemberRecord: LinkToTeamMember,
     }}
   />
-</article>
+</article>gql.tada
 ```
 
 ### Override default rendering of nodes
@@ -143,6 +144,7 @@ In this case, you can easily override default rendering rules with the `nodeOver
 
 ```astro
 ---
+import { StructuredText } from '@datocms/astro/StructuredText';
 import { isHeading } from 'datocms-structured-text-utils';
 import HeadingWithAnchorLink from '~/components/HeadingWithAnchorLink/index.astro';
 import Code from '~/components/Code/index.astro';
@@ -154,6 +156,34 @@ import Code from '~/components/Code/index.astro';
     heading: HeadingWithAnchorLink,
     code: Code,
   }}
+/>
+```
+
+### Strict props type checking
+
+Since [Astro doesn't support generics-typed components](https://github.com/withastro/roadmap/discussions/601) yet, you can use `ensureValidStructuredTextProps()` to strictly validate that all possible block and linked record types are managed in your `blockComponents`, `inlineRecordComponents` and `linkToRecordComponents` props.
+
+This is especially useful when working with tools like [gql.tada](https://gql-tada.0no.co/) that provide precise typing for your `data`:
+
+```astro
+---
+import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/StructuredText';
+---
+
+<StructuredText
+  {...ensureValidStructuredTextProps({
+    data: blogPost.content,
+    blockComponents: {
+      CtaRecord: Cta,
+      NewsletterSignupRecord: NewsletterSignup,
+    },
+    inlineRecordComponents: {
+      TeamMemberRecord: InlineTeamMember,
+    },
+    linkToRecordComponents: {
+      TeamMemberRecord: LinkToTeamMember,
+    },
+  })}
 />
 ```
 
