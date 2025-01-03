@@ -18,11 +18,13 @@ import type {
   MarkOverrides,
 } from './types';
 
-// It would be better to type this as:
+// It would be better to type this as a generic:
 //
 // interface Props<R1 extends DatocmsRecord = any, R2 extends DatocmsRecord = any>
 //
 // but it's currently not possible: https://github.com/withastro/roadmap/discussions/601#discussioncomment-10333959
+//
+// In the meantime, you can use ensureValidStructuredTextProps()
 
 interface Props {
   /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */

@@ -89,7 +89,7 @@ function findRecordInLinks(node: ItemLink | InlineItem) {
   return record;
 }
 
-const defaultComponents: Record<NodeType, AstroComponent> = {
+const defaultComponents: NodeOverrides = {
   paragraph: Paragraph,
   root: Root,
   span: Span,
@@ -106,11 +106,11 @@ const defaultComponents: Record<NodeType, AstroComponent> = {
 };
 
 const otherNodeComponents: Record<NodeType, AstroComponent> = {
-  ...defaultComponents,
+  ...(defaultComponents as Record<NodeType, AstroComponent>),
   ...nodeOverrides,
 };
 
-const Component = otherNodeComponents[node.type];
+const Component = otherNodeComponents[node.type] as AstroComponent;
 ---
 
 <>
