@@ -26,6 +26,8 @@ interface Props {
 
   /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
   blockComponents?: Record<string, AstroComponent>;
+  /** An object in which the keys are the `__typename` of the inline blocks to be rendered, and the values are the Astro components  */
+  inlineBlockComponents?: Record<string, AstroComponent>;
   /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
   linkToRecordComponents?: Record<string, AstroComponent>;
   /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
