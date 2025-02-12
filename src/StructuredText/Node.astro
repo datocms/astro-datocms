@@ -1,12 +1,14 @@
 ---
 import {
   type Block,
+  type InlineBlock,
   type Record as DatocmsRecord,
   type InlineItem,
   type ItemLink,
   type Node as DastNode,
   hasChildren,
   isBlock,
+  isInlineBlock,
   isInlineItem,
   isItemLink,
   RenderError,
@@ -25,11 +27,13 @@ import Root from './nodes/Root.astro';
 import Span from './nodes/Span.astro';
 import ThematicBreak from './nodes/ThematicBreak.astro';
 import BlockComponent from './nodes/Block.astro';
+import InlineBlockComponent from './nodes/InlineBlock.astro';
 import InlineItemComponent from './nodes/InlineItem.astro';
 import ItemLinkComponent from './nodes/ItemLink.astro';
 
 import type {
   BlockComponents,
+  InlineBlockComponents,
   InlineRecordComponents,
   LinkToRecordComponents,
   NodeOverrides,
@@ -44,6 +48,7 @@ interface Props {
   links?: DatocmsRecord[];
 
   blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
+  inlineBlockComponents?: InlineBlockComponents<DatocmsRecord, DatocmsRecord>;
   linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
   inlineRecordComponents?: InlineRecordComponents<DatocmsRecord, DatocmsRecord>;
 
@@ -57,18 +62,19 @@ const {
   blocks,
   links,
   blockComponents,
+  inlineBlockComponents,
   linkToRecordComponents,
   inlineRecordComponents,
   nodeOverrides,
   markOverrides,
 } = rest;
 
-function findRecordInBlocks(node: Block) {
+function findRecordInBlocks(node: Block | InlineBlock) {
   const record = (blocks || []).find(({ id }) => id === node.item);
 
   if (!record) {
     throw new RenderError(
-      `The Structured Text document contains a 'block' node, but cannot find a record with ID ${node.item} inside data.blocks!`,
+      `The Structured Text document contains a '${node.type}' node, but cannot find a record with ID ${node.item} inside data.blocks!`,
       node,
     );
   }
@@ -103,6 +109,7 @@ const defaultComponents: NodeOverrides = {
   itemLink: ItemLinkComponent,
   inlineItem: InlineItemComponent,
   block: BlockComponent,
+  inlineBlock: InlineBlockComponent,
 };
 
 const otherNodeComponents: Record<NodeType, AstroComponent> = {
@@ -117,6 +124,8 @@ const Component = otherNodeComponents[node.type] as AstroComponent;
   {
     isBlock(node) ? (
       <Component {node} block={findRecordInBlocks(node)} {blockComponents} />
+    ) : isInlineBlock(node) ? (
+      <Component {node} block={findRecordInBlocks(node)} {inlineBlockComponents} />
     ) : isInlineItem(node) ? (
       <Component {node} record={findRecordInLinks(node)} {inlineRecordComponents} />
     ) : isItemLink(node) ? (

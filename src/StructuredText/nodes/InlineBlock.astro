@@ -1,0 +1,27 @@
+---
+import {
+  type Record as DatocmsRecord,
+  RenderError,
+  type InlineBlock,
+} from 'datocms-structured-text-utils';
+import type { InlineBlockComponents } from '../types';
+
+interface Props {
+  node: InlineBlock;
+  block: DatocmsRecord;
+  inlineBlockComponents?: InlineBlockComponents<DatocmsRecord, DatocmsRecord>;
+}
+
+const { node, block, inlineBlockComponents } = Astro.props;
+
+const Component = inlineBlockComponents?.[block.__typename];
+
+if (!Component) {
+  throw new RenderError(
+    `The Structured Text document contains an 'inlineBlock' node, but no component for rendering it is specified in inlineBlockComponents prop!`,
+    node,
+  );
+}
+---
+
+<Component block={block} />
