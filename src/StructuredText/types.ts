@@ -2,6 +2,7 @@ import type { TransformedMeta } from 'datocms-structured-text-generic-html-rende
 import type {
   Block,
   Record as DatocmsRecord,
+  InlineBlock,
   InlineItem,
   ItemLink,
   Mark,
@@ -13,6 +14,10 @@ import type {
 export type AstroComponent<P = any> = (props: P) => any;
 
 export type BlockComponents<R1 extends DatocmsRecord, _R2 extends DatocmsRecord> = {
+  [R in R1 as R['__typename']]: AstroComponent<{ block: R }>;
+};
+
+export type InlineBlockComponents<R1 extends DatocmsRecord, _R2 extends DatocmsRecord> = {
   [R in R1 as R['__typename']]: AstroComponent<{ block: R }>;
 };
 
@@ -53,7 +58,13 @@ export type NodeOverrides = Partial<{
                 node: N;
                 markOverrides?: MarkOverrides;
               }
-            : { node: N }
+            : N extends InlineBlock
+              ? {
+                  node: N;
+                  block: DatocmsRecord;
+                  inlineBlockComponents: InlineBlockComponents<DatocmsRecord, DatocmsRecord>;
+                }
+              : { node: N }
   >;
 }>;
 
