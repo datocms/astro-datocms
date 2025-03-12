@@ -63,4 +63,11 @@ export type ImageProps = {
    * Default candidate multipliers are [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]
    **/
   srcSetCandidates?: number[];
+  /**
+   * Defines which referrer is sent when fetching the image
+   * Read more: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#referrerpolicy
+   *
+   * Defaults to `strict-origin` to give more useful stats in DatoCMS Project Usages
+   **/
+  referrerPolicy?: JSX.HTMLAttributeReferrerPolicy;
 };
