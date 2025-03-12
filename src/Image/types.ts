@@ -67,7 +67,7 @@ export type ImageProps = {
    * Defines which referrer is sent when fetching the image
    * Read more: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#referrerpolicy
    *
-   * Defaults to `strict-origin` to give more useful stats in DatoCMS Project Usages
+   * Defaults to `no-referrer-when-downgrade` to give more useful stats in DatoCMS Project Usages
    **/
   referrerPolicy?: JSX.HTMLAttributeReferrerPolicy;
 };
