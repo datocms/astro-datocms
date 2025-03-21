@@ -45,8 +45,8 @@
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.7",
     "datocms-listen": "^1.0.1",
-    "datocms-structured-text-generic-html-renderer": "^4.1.2",
-    "datocms-structured-text-utils": "^4.1.2"
+    "datocms-structured-text-generic-html-renderer": "^5.0.0",
+    "datocms-structured-text-utils": "^5.0.0"
   },
   "peerDependencies": {
     "astro": "*"

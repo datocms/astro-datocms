@@ -22,7 +22,7 @@ import type { NodeOverrides, MarkOverrides, AstroComponent } from './types';
 
 interface Props {
   /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
-  data: StructuredText<DatocmsRecord, DatocmsRecord> | Document | DastNode | null | undefined;
+  data: StructuredText | Document | DastNode | null | undefined;
 
   /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
   blockComponents?: Record<string, AstroComponent>;
