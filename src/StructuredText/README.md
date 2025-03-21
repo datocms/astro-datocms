@@ -94,6 +94,12 @@ const query = gql`
             label
             url
           }
+        }
+        inlineBlocks {
+          ... on RecordInterface {
+            id
+            __typename
+          }
           ... on NewsletterSignupRecord {
             title
           }
@@ -122,6 +128,8 @@ const { blogPost } = await executeQuery(query, { token: '<YOUR-API-TOKEN>' });
     data={blogPost.content}
     blockComponents={{
       CtaRecord: Cta,
+    }}
+    inlineBlockComponents={{
       NewsletterSignupRecord: NewsletterSignup,
     }}
     inlineRecordComponents={{
@@ -176,6 +184,8 @@ import { StructuredText, ensureValidStructuredTextProps } from '@datocms/astro/S
     data: blogPost.content,
     blockComponents: {
       CtaRecord: Cta,
+    },
+    inlineBlockComponents: {
       NewsletterSignupRecord: NewsletterSignup,
     },
     inlineRecordComponents: {
