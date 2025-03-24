@@ -4,7 +4,12 @@ import {
   type Document,
   type StructuredText,
 } from 'datocms-structured-text-utils';
-import type { BlockComponents, InlineRecordComponents, LinkToRecordComponents } from './types';
+import type {
+  BlockComponents,
+  InlineBlockComponents,
+  InlineRecordComponents,
+  LinkToRecordComponents,
+} from './types';
 
 type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRecord> =
   | {
@@ -20,8 +25,8 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       data:
         | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
-            links: never;
-            inlineBlocks: never;
+            links?: never;
+            inlineBlocks?: never;
           })
         | null
         | undefined;
@@ -35,9 +40,9 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
         | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
-            blocks: never;
+            blocks?: never;
             links: L[];
-            inlineBlocks: never;
+            inlineBlocks?: never;
           })
         | null
         | undefined;
@@ -52,15 +57,15 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
         | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
-            blocks: never;
-            links: never;
+            blocks?: never;
+            links?: never;
             inlineBlocks: I[];
           })
         | null
         | undefined;
       blockComponents?: never;
       /** An object in which the keys are the `__typename` of the inline blocks to be rendered, and the values are the Astro components  */
-      inlineBlockComponents: BlockComponents<B, L, I>;
+      inlineBlockComponents: InlineBlockComponents<B, L, I>;
       linkToRecordComponents?: never;
       inlineRecordComponents?: never;
     }
@@ -68,7 +73,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
         | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
-            blocks: never;
+            blocks?: never;
             links: L[];
             inlineBlocks: I[];
           })
@@ -76,7 +81,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
         | undefined;
       blockComponents?: never;
       /** An object in which the keys are the `__typename` of the inline blocks to be rendered, and the values are the Astro components  */
-      inlineBlockComponents: BlockComponents<B, L, I>;
+      inlineBlockComponents: InlineBlockComponents<B, L, I>;
       /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
       linkToRecordComponents: LinkToRecordComponents<B, L, I>;
       /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
@@ -87,7 +92,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       data:
         | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
-            links: never;
+            links?: never;
             inlineBlocks: I[];
           })
         | null
@@ -95,7 +100,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
       blockComponents: BlockComponents<B, L, I>;
       /** An object in which the keys are the `__typename` of the inline blocks to be rendered, and the values are the Astro components  */
-      inlineBlockComponents: BlockComponents<B, L, I>;
+      inlineBlockComponents: InlineBlockComponents<B, L, I>;
       linkToRecordComponents?: never;
       inlineRecordComponents?: never;
     }
@@ -105,7 +110,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
         | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
             links: L[];
-            inlineBlocks: never;
+            inlineBlocks?: never;
           })
         | null
         | undefined;
@@ -130,7 +135,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
       /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
       blockComponents: BlockComponents<B, L, I>;
       /** An object in which the keys are the `__typename` of the inline blocks to be rendered, and the values are the Astro components  */
-      inlineBlockComponents: BlockComponents<B, L, I>;
+      inlineBlockComponents: InlineBlockComponents<B, L, I>;
       /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
       linkToRecordComponents: LinkToRecordComponents<B, L, I>;
       /** An object in which the keys are the `__typename` of the records to be rendered, and the values are the Astro components */
@@ -138,9 +143,9 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
     };
 
 export function ensureValidStructuredTextProps<
-  B extends DatocmsRecord,
-  L extends DatocmsRecord,
-  I extends DatocmsRecord,
+  B extends DatocmsRecord = DatocmsRecord,
+  L extends DatocmsRecord = DatocmsRecord,
+  I extends DatocmsRecord = DatocmsRecord,
 >(props: Props<B, L, I>): Props<B, L, I> {
   return props;
 }
