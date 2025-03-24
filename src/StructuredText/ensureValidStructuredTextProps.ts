@@ -14,7 +14,16 @@ import type {
 type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRecord> =
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
-      data: Document | DastNode | null | undefined;
+      data:
+        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+            blocks?: never;
+            links?: never;
+            inlineBlocks?: never;
+          })
+        | Document
+        | DastNode
+        | null
+        | undefined;
       blockComponents?: never;
       inlineBlockComponents?: never;
       linkToRecordComponents?: never;
