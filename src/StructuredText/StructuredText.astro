@@ -52,8 +52,8 @@ const node = !data
         : undefined;
 
 const blocks = isStructuredText(data) ? data?.blocks : undefined;
-
+const inlineBlocks = isStructuredText(data) ? data?.inlineBlocks : undefined;
 const links = isStructuredText(data) ? data?.links : undefined;
 ---
 
-{node && <Node {node} {blocks} {links} {...rest} />}
+{node && <Node {node} {blocks} {inlineBlocks} {links} {...rest} />}

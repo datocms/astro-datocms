@@ -45,6 +45,7 @@ interface Props {
   node: DastNode;
 
   blocks?: DatocmsRecord[];
+  inlineBlocks?: DatocmsRecord[];
   links?: DatocmsRecord[];
 
   blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
@@ -60,6 +61,7 @@ const { node, ...rest } = Astro.props;
 
 const {
   blocks,
+  inlineBlocks,
   links,
   blockComponents,
   inlineBlockComponents,
@@ -69,12 +71,25 @@ const {
   markOverrides,
 } = rest;
 
-function findRecordInBlocks(node: Block | InlineBlock) {
+function findRecordInBlocks(node: Block) {
   const record = (blocks || []).find(({ id }) => id === node.item);
 
   if (!record) {
     throw new RenderError(
       `The Structured Text document contains a '${node.type}' node, but cannot find a record with ID ${node.item} inside data.blocks!`,
+      node,
+    );
+  }
+
+  return record;
+}
+
+function findRecordInInlineBlocks(node: InlineBlock) {
+  const record = (inlineBlocks || []).find(({ id }) => id === node.item);
+
+  if (!record) {
+    throw new RenderError(
+      `The Structured Text document contains a '${node.type}' node, but cannot find a record with ID ${node.item} inside data.inlineBlocks!`,
       node,
     );
   }
@@ -125,7 +140,7 @@ const Component = otherNodeComponents[node.type] as AstroComponent;
     isBlock(node) ? (
       <Component {node} block={findRecordInBlocks(node)} {blockComponents} />
     ) : isInlineBlock(node) ? (
-      <Component {node} block={findRecordInBlocks(node)} {inlineBlockComponents} />
+      <Component {node} block={findRecordInInlineBlocks(node)} {inlineBlockComponents} />
     ) : isInlineItem(node) ? (
       <Component {node} record={findRecordInLinks(node)} {inlineRecordComponents} />
     ) : isItemLink(node) ? (
