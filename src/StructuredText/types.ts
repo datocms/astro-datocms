@@ -1,7 +1,7 @@
 import type { TransformedMeta } from 'datocms-structured-text-generic-html-renderer';
 import type {
   Block,
-  Record as DatocmsRecord,
+  CdaStructuredTextRecord as DatocmsRecord,
   InlineBlock,
   InlineItem,
   ItemLink,
