@@ -2,7 +2,7 @@
   "name": "@datocms/astro",
   "description": "A set of components and utilities to work faster with DatoCMS in Astro projects.",
   "type": "module",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "sideEffects": false,
   "repository": {
     "type": "git",
