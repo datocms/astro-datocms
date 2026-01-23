@@ -27,6 +27,7 @@ A set of TypeScript-ready components and utilities to work faster with [DatoCMS]
 
 `@datocms/astro` contains ready-to-use Astro components and helpers:
 
+- [`<ContentLink />`](src/ContentLink) for Visual Editing with click-to-edit overlays
 - [`<Image />`](src/Image)
 - [`<Seo />`](src/Seo)
 - [`<StructuredText />`](src/StructuredText)

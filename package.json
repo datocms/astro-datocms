@@ -34,7 +34,8 @@
     "./Image": "./src/Image/index.ts",
     "./StructuredText": "./src/StructuredText/index.ts",
     "./Seo": "./src/Seo/index.ts",
-    "./QueryListener": "./src/QueryListener/index.ts"
+    "./QueryListener": "./src/QueryListener/index.ts",
+    "./ContentLink": "./src/ContentLink/index.ts"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -44,6 +45,7 @@
   ],
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.7",
+    "@datocms/content-link": "^0.3.7",
     "datocms-listen": "^1.0.1",
     "datocms-structured-text-generic-html-renderer": "^5.0.0",
     "datocms-structured-text-utils": "^5.1.6"
