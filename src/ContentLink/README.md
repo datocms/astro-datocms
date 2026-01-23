@@ -275,7 +275,7 @@ const cleanText = stripStega(text);
 
 ### `stripStega()` works with any data type
 
-The `stripStega()` function handles strings, objects, arrays, and primitives by converting to JSON, removing stega encodings with `VERCEL_STEGA_REGEX`, and parsing back to the original type:
+The `stripStega()` function handles strings, objects, arrays, and primitives:
 
 ```js
 // Works with strings
