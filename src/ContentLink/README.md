@@ -272,6 +272,29 @@ const cleanText = stripStega(text);
 - **Programmatic text processing**: Remove invisible characters before string operations
 - **Debugging**: Use `decodeStega()` to inspect what editing URLs are embedded in content
 
+### `stripStega()` works with any data type
+
+The `stripStega()` function handles strings, objects, arrays, and primitives by converting to JSON, removing stega encodings with `VERCEL_STEGA_REGEX`, and parsing back to the original type:
+
+```js
+// Works with strings
+stripStega("Hello‎World") // "HelloWorld"
+
+// Works with objects
+stripStega({ name: "John‎", age: 30 })
+
+// Works with nested structures - removes ALL stega encodings
+stripStega({
+  users: [
+    { name: "Alice‎", email: "alice‎.com" },
+    { name: "Bob‎", email: "bob‎.co" }
+  ]
+})
+
+// Works with arrays
+stripStega(["First‎", "Second‎", "Third‎"])
+```
+
 ## Troubleshooting
 
 ### Click-to-edit overlays not appearing
