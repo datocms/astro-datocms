@@ -2,7 +2,7 @@
   "name": "@datocms/astro",
   "description": "A set of components and utilities to work faster with DatoCMS in Astro projects.",
   "type": "module",
-  "version": "0.6.5-0",
+  "version": "0.6.5-1",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -45,7 +45,7 @@
   ],
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.7",
-    "@datocms/content-link": "^0.3.8",
+    "@datocms/content-link": "^0.3.9",
     "datocms-listen": "^1.0.1",
     "datocms-structured-text-generic-html-renderer": "^5.0.0",
     "datocms-structured-text-utils": "^5.1.6"
