@@ -36,6 +36,7 @@ Visual Editing transforms how editors interact with your content by letting them
   - [Edit boundaries with `data-datocms-content-link-boundary`](#edit-boundaries-with-data-datocms-content-link-boundary)
 - [Manual overlays with `data-datocms-content-link-url`](#manual-overlays-with-data-datocms-content-link-url)
 - [Low-level utilities](#low-level-utilities)
+  - [`stripStega()` works with any data type](#stripstega-works-with-any-data-type)
 - [Troubleshooting](#troubleshooting)
   - [Click-to-edit overlays not appearing](#click-to-edit-overlays-not-appearing)
   - [Navigation not syncing in Web Previews plugin](#navigation-not-syncing-in-web-previews-plugin)
@@ -278,21 +279,21 @@ The `stripStega()` function handles strings, objects, arrays, and primitives by 
 
 ```js
 // Works with strings
-stripStega("Hello‎World") // "HelloWorld"
+stripStega('Hello‎World'); // "HelloWorld"
 
 // Works with objects
-stripStega({ name: "John‎", age: 30 })
+stripStega({ name: 'John‎', age: 30 });
 
 // Works with nested structures - removes ALL stega encodings
 stripStega({
   users: [
-    { name: "Alice‎", email: "alice‎.com" },
-    { name: "Bob‎", email: "bob‎.co" }
-  ]
-})
+    { name: 'Alice‎', email: 'alice‎.com' },
+    { name: 'Bob‎', email: 'bob‎.co' },
+  ],
+});
 
 // Works with arrays
-stripStega(["First‎", "Second‎", "Third‎"])
+stripStega(['First‎', 'Second‎', 'Third‎']);
 ```
 
 ## Troubleshooting
