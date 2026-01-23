@@ -34,7 +34,9 @@ Visual Editing transforms how editors interact with your content by letting them
 - [StructuredText integration](#structuredtext-integration)
   - [Edit groups with `data-datocms-content-link-group`](#edit-groups-with-data-datocms-content-link-group)
   - [Edit boundaries with `data-datocms-content-link-boundary`](#edit-boundaries-with-data-datocms-content-link-boundary)
-- [Manual overlays with `data-datocms-content-link-url`](#manual-overlays-with-data-datocms-content-link-url)
+- [Manual overlays](#manual-overlays)
+  - [Using `data-datocms-content-link-url`](#using-data-datocms-content-link-url)
+  - [Using `data-datocms-content-link-source`](#using-data-datocms-content-link-source)
 - [Low-level utilities](#low-level-utilities)
   - [`stripStega()` works with any data type](#stripstega-works-with-any-data-type)
 - [Troubleshooting](#troubleshooting)
@@ -203,13 +205,13 @@ This ensures:
 - Clicking the main text opens the Structured Text field editor
 - Clicking an embedded block opens that specific block's editor
 
-## Manual overlays with `data-datocms-content-link-url`
+## Manual overlays
 
-Text-based fields automatically include stega-encoded metadata. However, non-text fields (booleans, numbers, dates, JSON) cannot contain stega encoding.
+In some cases, you may want to manually create click-to-edit overlays for content that doesn't have stega encoding.
 
-For these fields, manually specify the edit URL using the `data-datocms-content-link-url` attribute:
+### Using `data-datocms-content-link-url`
 
-**1. Request the `_editingUrl` field in your GraphQL query:**
+You can add the `data-datocms-content-link-url` attribute with a DatoCMS editing URL:
 
 ```graphql
 query {
@@ -223,17 +225,7 @@ query {
 }
 ```
 
-**2. Add the attribute to your HTML element:**
-
 ```astro
----
-const { product } = await executeQuery(query, {
-  token: import.meta.env.DATOCMS_API_TOKEN,
-  contentLink: 'v1',
-  baseEditingUrl: 'https://your-project.admin.datocms.com',
-});
----
-
 <div>
   <span data-datocms-content-link-url={product._editingUrl}>
     ${product.price}
@@ -245,7 +237,20 @@ const { product } = await executeQuery(query, {
 </div>
 ```
 
-The `_editingUrl` field ensures the URL format is always correct and adapts to future changes automatically.
+### Using `data-datocms-content-link-source`
+
+For elements without visible stega-encoded content, use the [`data-datocms-content-link-source`](https://github.com/datocms/content-link?tab=readme-ov-file#stamping-elements-via-data-datocms-content-link-source) attribute to attach stega metadata directly:
+
+```astro
+<!-- product.asset.video.alt contains stega-encoded info -->
+<video
+  src={product.asset.video.url}
+  data-datocms-content-link-source={product.asset.video.alt}
+  controls
+/>
+```
+
+This is useful for structural elements like `<video>`, `<audio>`, or `<iframe>` where stega encoding in visible text would be problematic.
 
 ## Low-level utilities
 
