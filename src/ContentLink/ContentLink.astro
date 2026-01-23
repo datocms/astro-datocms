@@ -66,94 +66,111 @@ const enableClickToEditValue =
       : enableClickToEdit;
 ---
 
-<div
-  id="datocms-content-link-root"
+<datocms-content-link
   data-enable-click-to-edit={enableClickToEditValue !== undefined
     ? JSON.stringify(enableClickToEditValue)
     : undefined}
   data-strip-stega={stripStega ? 'true' : undefined}
-  style="display: none;"
 >
-</div>
+</datocms-content-link>
 
 <script>
   import { createController } from '@datocms/content-link';
   import { navigate } from 'astro:transitions/client';
 
-  let controller: ReturnType<typeof createController> | null = null;
+  class DatoCMSContentLink extends HTMLElement {
+    private controller: ReturnType<typeof createController> | null = null;
+    private pageLoadHandler: (() => void) | null = null;
 
-  // Read configuration from data attributes
-  const rootElement = document.getElementById('datocms-content-link-root');
-  const enableClickToEditAttr = rootElement?.getAttribute('data-enable-click-to-edit');
-  const stripStegaAttr = rootElement?.getAttribute('data-strip-stega');
+    connectedCallback() {
+      this.initContentLink();
+    }
 
-  const enableClickToEdit = enableClickToEditAttr ? JSON.parse(enableClickToEditAttr) : undefined;
-  const stripStega = stripStegaAttr === 'true';
+    disconnectedCallback() {
+      this.cleanup();
+    }
 
-  // Initialize the content-link controller
-  function initContentLink() {
-    controller = createController({
-      // Handle navigation requests from the Web Previews plugin
-      // Inside Visual mode, users can navigate to different URLs (like a browser bar)
-      // and the plugin will request the preview to navigate accordingly
-      onNavigateTo: (path: string) => {
-        navigate(path);
-      },
-      // Strip stega encoding if requested
-      stripStega: stripStega,
-    });
+    private initContentLink() {
+      // Read configuration from data attributes
+      const enableClickToEditAttr = this.getAttribute('data-enable-click-to-edit');
+      const stripStegaAttr = this.getAttribute('data-strip-stega');
 
-    // Notify the controller of the current path
-    controller.setCurrentPath(document.location.toString());
+      const enableClickToEdit = enableClickToEditAttr
+        ? JSON.parse(enableClickToEditAttr)
+        : undefined;
+      const stripStega = stripStegaAttr === 'true';
 
-    // Listen for Astro page-load events (fires after client-side navigation)
-    //
-    // IMPORTANT: Why this works even without <ClientRouter /> (View Transitions):
-    //
-    // The 'astro:page-load' event fires in two scenarios:
-    //
-    // 1. WITH View Transitions (<ClientRouter />):
-    //    - Event fires on initial page load and after every client-side navigation
-    //    - The <ClientRouter /> component enables full SPA-like routing
-    //
-    // 2. WITHOUT View Transitions:
-    //    - Event STILL fires on initial page load if any module imports from 'astro:transitions/client'
-    //    - The import above ('import { navigate } from astro:transitions/client') triggers
-    //      the module's initialization code, which registers a 'load' event listener that
-    //      dispatches 'astro:page-load' on page load
-    //    - The navigate() function will work but falls back to full page reload
-    //      (it detects no view transitions are enabled and uses location.href instead)
-    //    - This means the component works correctly for both scenarios without requiring
-    //      the user to enable View Transitions
-    //
-    // In summary: By importing from 'astro:transitions/client', we ensure this component
-    // works seamlessly regardless of whether the site uses View Transitions or not.
-    document.addEventListener('astro:page-load', () => {
-      if (controller) {
-        controller.setCurrentPath(document.location.toString());
+      // Initialize the content-link controller
+      this.controller = createController({
+        // Handle navigation requests from the Web Previews plugin
+        // Inside Visual mode, users can navigate to different URLs (like a browser bar)
+        // and the plugin will request the preview to navigate accordingly
+        onNavigateTo: (path: string) => {
+          navigate(path);
+        },
+        // Strip stega encoding if requested
+        stripStega: stripStega,
+      });
+
+      // Notify the controller of the current path
+      this.controller.setCurrentPath(document.location.toString());
+
+      // Listen for Astro page-load events (fires after client-side navigation)
+      //
+      // IMPORTANT: Why this works even without <ClientRouter /> (View Transitions):
+      //
+      // The 'astro:page-load' event fires in two scenarios:
+      //
+      // 1. WITH View Transitions (<ClientRouter />):
+      //    - Event fires on initial page load and after every client-side navigation
+      //    - The <ClientRouter /> component enables full SPA-like routing
+      //
+      // 2. WITHOUT View Transitions:
+      //    - Event STILL fires on initial page load if any module imports from 'astro:transitions/client'
+      //    - The import above ('import { navigate } from astro:transitions/client') triggers
+      //      the module's initialization code, which registers a 'load' event listener that
+      //      dispatches 'astro:page-load' on page load
+      //    - The navigate() function will work but falls back to full page reload
+      //      (it detects no view transitions are enabled and uses location.href instead)
+      //    - This means the component works correctly for both scenarios without requiring
+      //      the user to enable View Transitions
+      //
+      // In summary: By importing from 'astro:transitions/client', we ensure this component
+      // works seamlessly regardless of whether the site uses View Transitions or not.
+      this.pageLoadHandler = () => {
+        if (this.controller) {
+          this.controller.setCurrentPath(document.location.toString());
+        }
+      };
+      document.addEventListener('astro:page-load', this.pageLoadHandler);
+
+      // Enable click-to-edit mode if requested via prop
+      if (enableClickToEdit !== undefined) {
+        if (typeof enableClickToEdit === 'boolean') {
+          this.controller.enableClickToEdit();
+        } else {
+          this.controller.enableClickToEdit(enableClickToEdit);
+        }
       }
-    });
+      // Otherwise, click-to-edit overlays are not enabled by default.
+      // Users can press and hold Alt/Option key to temporarily enable click-to-edit mode
+    }
 
-    // Enable click-to-edit mode if requested via prop
-    if (enableClickToEdit !== undefined) {
-      if (typeof enableClickToEdit === 'boolean') {
-        controller.enableClickToEdit();
-      } else {
-        controller.enableClickToEdit(enableClickToEdit);
+    private cleanup() {
+      if (this.controller) {
+        this.controller.dispose();
+        this.controller = null;
+      }
+
+      if (this.pageLoadHandler) {
+        document.removeEventListener('astro:page-load', this.pageLoadHandler);
+        this.pageLoadHandler = null;
       }
     }
-    // Otherwise, click-to-edit overlays are not enabled by default.
-    // Users can press and hold Alt/Option key to temporarily enable click-to-edit mode
   }
 
-  // Initialize on page load
-  initContentLink();
-
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', () => {
-    if (controller) {
-      controller.dispose();
-      controller = null;
-    }
-  });
+  // Register the custom element
+  if (!customElements.get('datocms-content-link')) {
+    customElements.define('datocms-content-link', DatoCMSContentLink);
+  }
 </script>
