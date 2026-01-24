@@ -81,7 +81,7 @@ const result = await executeQuery(query, {
 ---
 ```
 
-The `contentLink: 'v1'` option enables stega encoding, which embeds invisible metadata into text fields. The `baseEditingUrl` tells DatoCMS where your project is located so edit URLs can be generated correctly.
+The `contentLink: 'v1'` option enables stega encoding, which embeds invisible metadata into text fields. The `baseEditingUrl` tells DatoCMS where your project is located so edit URLs can be generated correctly. Both options are required.
 
 ### Step 2: Add the ContentLink component
 
@@ -246,8 +246,7 @@ For elements without visible stega-encoded content, use the [`data-datocms-conte
 <video
   src={product.asset.video.url}
   data-datocms-content-link-source={product.asset.video.alt}
-  controls
-/>
+  controls></video>
 ```
 
 This is useful for structural elements like `<video>`, `<audio>`, or `<iframe>` where stega encoding in visible text would be problematic.
