@@ -34,7 +34,7 @@ export interface Props {
    *
    * - `true`: Enable click-to-edit mode immediately
    * - `{ scrollToNearestTarget: true }`: Enable and scroll to nearest editable if none visible
-   * - `undefined`: Don't enable automatically (use Alt/Option key to toggle)
+   * - `false` or `undefined`: Don't enable automatically (use Alt/Option key to toggle)
    *
    * @example
    * ```astro
@@ -145,8 +145,8 @@ const enableClickToEditValue =
       document.addEventListener('astro:page-load', this.pageLoadHandler);
 
       // Enable click-to-edit mode if requested via prop
-      if (enableClickToEdit !== undefined) {
-        if (typeof enableClickToEdit === 'boolean') {
+      if (enableClickToEdit) {
+        if (enableClickToEdit === true) {
           this.controller.enableClickToEdit();
         } else {
           this.controller.enableClickToEdit(enableClickToEdit);
