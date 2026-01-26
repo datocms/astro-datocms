@@ -140,10 +140,37 @@ You get the full Visual Editing experience regardless of your routing setup.
 
 ## Props
 
-| Prop                | Type                                             | Default | Description                                                                                                                               |
-| ------------------- | ------------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `enableClickToEdit` | `boolean \| { scrollToNearestTarget?: boolean }` | -       | Enable click-to-edit overlays on mount. Use `true` for immediate activation, or pass options like `{ scrollToNearestTarget: true }`       |
-| `stripStega`        | `boolean`                                        | `false` | Strip stega-encoded invisible characters from text content. When `true`, encoding is permanently removed (prevents controller recreation) |
+| Prop                | Type                                                                  | Default | Description                                                                                                                               |
+| ------------------- | --------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `enableClickToEdit` | `boolean \| { scrollToNearestTarget?: boolean; hoverOnly?: boolean }` | -       | Enable click-to-edit overlays on mount. Use `true` for immediate activation, or pass options object (see below)                           |
+| `stripStega`        | `boolean`                                                             | `false` | Strip stega-encoded invisible characters from text content. When `true`, encoding is permanently removed (prevents controller recreation) |
+
+### `enableClickToEdit` options
+
+When passing an options object to `enableClickToEdit`, the following properties are available:
+
+| Option                   | Type      | Default | Description                                                                                                                                                                                           |
+| ------------------------ | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scrollToNearestTarget`  | `boolean` | `false` | Automatically scroll to the nearest editable element if none is currently visible in the viewport when click-to-edit mode is enabled                                                                  |
+| `hoverOnly`              | `boolean` | `false` | Only enable click-to-edit on devices that support hover (non-touch). Uses `window.matchMedia('(hover: hover)')` to detect hover capability. On touch devices, users can still toggle with Alt/Option |
+
+**Examples:**
+
+```astro
+<!-- Enable click-to-edit immediately -->
+<ContentLink enableClickToEdit={true} />
+
+<!-- Enable with scroll-to-nearest behavior -->
+<ContentLink enableClickToEdit={{ scrollToNearestTarget: true }} />
+
+<!-- Only enable on devices with hover capability (recommended for sites with touch users) -->
+<ContentLink enableClickToEdit={{ hoverOnly: true }} />
+
+<!-- Combine both options -->
+<ContentLink enableClickToEdit={{ hoverOnly: true, scrollToNearestTarget: true }} />
+```
+
+The `hoverOnly` option is particularly useful for websites that receive traffic from both desktop and mobile users. On touch devices, the click-to-edit overlays can interfere with normal scrolling and tapping behavior. By setting `hoverOnly: true`, overlays will only appear automatically on devices with a mouse or trackpad, while touch device users can still access click-to-edit mode by pressing and holding the Alt/Option key.
 
 ## StructuredText integration
 

@@ -28,21 +28,48 @@
  * @see https://www.datocms.com/marketplace/plugins/i/datocms-plugin-web-previews
  */
 
+export interface ClickToEditOptions {
+  /**
+   * Whether to automatically scroll to the nearest editable element if none
+   * is currently visible in the viewport when click-to-edit mode is enabled.
+   *
+   * @default false
+   */
+  scrollToNearestTarget?: boolean;
+
+  /**
+   * Only enable click-to-edit on devices that support hover (i.e., non-touch devices).
+   * Uses `window.matchMedia('(hover: hover)')` to detect hover capability.
+   *
+   * This is useful to avoid showing overlays on touch devices where they may
+   * interfere with normal scrolling and tapping behavior.
+   *
+   * When set to `true` on a touch-only device, click-to-edit will not be
+   * automatically enabled, but users can still toggle it manually using
+   * the Alt/Option key.
+   *
+   * @default false
+   */
+  hoverOnly?: boolean;
+}
+
 export interface Props {
   /**
    * Whether to enable click-to-edit overlays on mount, or options to configure them.
    *
    * - `true`: Enable click-to-edit mode immediately
    * - `{ scrollToNearestTarget: true }`: Enable and scroll to nearest editable if none visible
-   * - `false` or `undefined`: Don't enable automatically (use Alt/Option key to toggle)
+   * - `{ hoverOnly: true }`: Only enable on devices with hover capability (non-touch)
+   * - `false`/`undefined`: Don't enable automatically (use Alt/Option key to toggle)
    *
    * @example
    * ```astro
    * <ContentLink enableClickToEdit={true} />
    * <ContentLink enableClickToEdit={{ scrollToNearestTarget: true }} />
+   * <ContentLink enableClickToEdit={{ hoverOnly: true, scrollToNearestTarget: true }} />
    * ```
    */
-  enableClickToEdit?: boolean | { scrollToNearestTarget?: boolean };
+  enableClickToEdit?: boolean | ClickToEditOptions;
 
   /**
    * Whether to strip stega-encoded invisible characters from text content after stamping.
@@ -146,10 +173,15 @@ const enableClickToEditValue =
 
       // Enable click-to-edit mode if requested via prop
       if (enableClickToEdit) {
-        if (enableClickToEdit === true) {
-          this.controller.enableClickToEdit();
-        } else {
-          this.controller.enableClickToEdit(enableClickToEdit);
+        // Check if hoverOnly is set and device doesn't support hover
+        const hoverOnly = typeof enableClickToEdit === 'object' && enableClickToEdit.hoverOnly;
+
+        if (!hoverOnly || window.matchMedia('(hover: hover)').matches) {
+          if (enableClickToEdit === true) {
+            this.controller.enableClickToEdit();
+          } else {
+            this.controller.enableClickToEdit(enableClickToEdit);
+          }
         }
       }
       // Otherwise, click-to-edit overlays are not enabled by default.
