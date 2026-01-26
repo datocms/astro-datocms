@@ -25,6 +25,7 @@
   "scripts": {
     "prepare": "npx simple-git-hooks",
     "lint": "prettier --check .",
+    "build": "npx astro check",
     "format": "npm run toc && npx prettier . --write",
     "toc": "doctoc --github README.md src",
     "test": "echo 1"
@@ -54,13 +55,14 @@
     "astro": "*"
   },
   "devDependencies": {
-    "astro": "^4.13.1",
+    "astro": "^5.16.15",
     "doctoc": "^2.2.1",
     "np": "^10.0.7",
     "prettier": "^3.3.3",
     "prettier-plugin-astro": "^0.14.1",
     "simple-git-hooks": "^2.11.1",
-    "typescript": "^5.5.4"
+    "typescript": "^5.9.3",
+    "@astrojs/check": "^0.9.6"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run format"

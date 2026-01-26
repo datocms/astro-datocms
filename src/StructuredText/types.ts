@@ -1,7 +1,7 @@
 import type { TransformedMeta } from 'datocms-structured-text-generic-html-renderer';
 import type {
   Block,
-  CdaStructuredTextRecord as DatocmsRecord,
+  CdaStructuredTextRecord,
   InlineBlock,
   InlineItem,
   ItemLink,
@@ -14,25 +14,25 @@ import type {
 export type AstroComponent<P = any> = (props: P) => any;
 
 export type BlockComponents<
-  B extends DatocmsRecord,
-  _L extends DatocmsRecord,
-  _I extends DatocmsRecord,
+  B extends CdaStructuredTextRecord,
+  _L extends CdaStructuredTextRecord,
+  _I extends CdaStructuredTextRecord,
 > = {
   [R in B as R['__typename']]: AstroComponent<{ block: R }>;
 };
 
 export type InlineBlockComponents<
-  _B extends DatocmsRecord,
-  _L extends DatocmsRecord,
-  I extends DatocmsRecord,
+  _B extends CdaStructuredTextRecord,
+  _L extends CdaStructuredTextRecord,
+  I extends CdaStructuredTextRecord,
 > = {
   [R in I as R['__typename']]: AstroComponent<{ block: R }>;
 };
 
 export type LinkToRecordComponents<
-  _B extends DatocmsRecord,
-  L extends DatocmsRecord,
-  _I extends DatocmsRecord,
+  _B extends CdaStructuredTextRecord,
+  L extends CdaStructuredTextRecord,
+  _I extends CdaStructuredTextRecord,
 > = {
   [R in L as R['__typename']]: AstroComponent<{
     node: ItemLink;
@@ -42,9 +42,9 @@ export type LinkToRecordComponents<
 };
 
 export type InlineRecordComponents<
-  _B extends DatocmsRecord,
-  L extends DatocmsRecord,
-  _I extends DatocmsRecord,
+  _B extends CdaStructuredTextRecord,
+  L extends CdaStructuredTextRecord,
+  _I extends CdaStructuredTextRecord,
 > = {
   [R in L as R['__typename']]: AstroComponent<{ record: R }>;
 };
@@ -54,28 +54,32 @@ export type NodeOverrides = Partial<{
     N extends ItemLink
       ? {
           node: ItemLink;
-          record: DatocmsRecord;
+          record: CdaStructuredTextRecord;
           linkToRecordComponents?: LinkToRecordComponents<
-            DatocmsRecord,
-            DatocmsRecord,
-            DatocmsRecord
+            CdaStructuredTextRecord,
+            CdaStructuredTextRecord,
+            CdaStructuredTextRecord
           >;
         }
       : N extends InlineItem
         ? {
             node: InlineItem;
-            record: DatocmsRecord;
+            record: CdaStructuredTextRecord;
             inlineRecordComponents?: InlineRecordComponents<
-              DatocmsRecord,
-              DatocmsRecord,
-              DatocmsRecord
+              CdaStructuredTextRecord,
+              CdaStructuredTextRecord,
+              CdaStructuredTextRecord
             >;
           }
         : N extends Block
           ? {
               node: Block;
-              block: DatocmsRecord;
-              blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord, DatocmsRecord>;
+              block: CdaStructuredTextRecord;
+              blockComponents?: BlockComponents<
+                CdaStructuredTextRecord,
+                CdaStructuredTextRecord,
+                CdaStructuredTextRecord
+              >;
             }
           : N extends Span
             ? {
@@ -85,11 +89,11 @@ export type NodeOverrides = Partial<{
             : N extends InlineBlock
               ? {
                   node: N;
-                  block: DatocmsRecord;
+                  block: CdaStructuredTextRecord;
                   inlineBlockComponents: InlineBlockComponents<
-                    DatocmsRecord,
-                    DatocmsRecord,
-                    DatocmsRecord
+                    CdaStructuredTextRecord,
+                    CdaStructuredTextRecord,
+                    CdaStructuredTextRecord
                   >;
                 }
               : { node: N }

@@ -2,11 +2,10 @@
 import {
   type Node as DastNode,
   type Document,
-  type Record as DatocmsRecord,
-  type StructuredText,
+  type CdaStructuredTextValue,
   isDocument,
   isNode,
-  isStructuredText,
+  isCdaStructuredTextValue,
 } from 'datocms-structured-text-utils';
 
 import Node from './Node.astro';
@@ -14,7 +13,7 @@ import type { NodeOverrides, MarkOverrides, AstroComponent } from './types';
 
 // It would be better to type this as a generic:
 //
-// interface Props<R1 extends DatocmsRecord = any, R2 extends DatocmsRecord = any>
+// interface Props<B extends CdaStructuredTextRecord = any, L extends CdaStructuredTextRecord = any, I extends CdaStructuredTextRecord = any>
 //
 // but it's currently not possible: https://github.com/withastro/roadmap/discussions/601#discussioncomment-10333959
 //
@@ -22,7 +21,7 @@ import type { NodeOverrides, MarkOverrides, AstroComponent } from './types';
 
 interface Props {
   /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
-  data: StructuredText | Document | DastNode | null | undefined;
+  data: CdaStructuredTextValue | Document | DastNode | null | undefined;
 
   /** An object in which the keys are the `__typename` of the blocks to be rendered, and the values are the Astro components  */
   blockComponents?: Record<string, AstroComponent>;
@@ -43,7 +42,7 @@ const { data, ...rest } = Astro.props;
 
 const node = !data
   ? null
-  : isStructuredText(data) && isDocument(data.value)
+  : isCdaStructuredTextValue(data) && isDocument(data.value)
     ? data.value.document
     : isDocument(data)
       ? data.document
@@ -51,9 +50,9 @@ const node = !data
         ? data
         : undefined;
 
-const blocks = isStructuredText(data) ? data?.blocks : undefined;
-const inlineBlocks = isStructuredText(data) ? data?.inlineBlocks : undefined;
-const links = isStructuredText(data) ? data?.links : undefined;
+const blocks = isCdaStructuredTextValue(data) ? data?.blocks : undefined;
+const inlineBlocks = isCdaStructuredTextValue(data) ? data?.inlineBlocks : undefined;
+const links = isCdaStructuredTextValue(data) ? data?.links : undefined;
 ---
 
 {node && <Node {node} {blocks} {inlineBlocks} {links} {...rest} />}

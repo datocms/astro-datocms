@@ -1,8 +1,8 @@
 import {
   type Node as DastNode,
-  type Record as DatocmsRecord,
+  type CdaStructuredTextRecord,
   type Document,
-  type StructuredText,
+  type CdaStructuredTextValue,
 } from 'datocms-structured-text-utils';
 import type {
   BlockComponents,
@@ -11,11 +11,15 @@ import type {
   LinkToRecordComponents,
 } from './types';
 
-type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRecord> =
+type Props<
+  B extends CdaStructuredTextRecord,
+  L extends CdaStructuredTextRecord,
+  I extends CdaStructuredTextRecord,
+> =
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks?: never;
             links?: never;
             inlineBlocks?: never;
@@ -32,7 +36,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
             links?: never;
             inlineBlocks?: never;
@@ -48,7 +52,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks?: never;
             links: L[];
             inlineBlocks?: never;
@@ -65,7 +69,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks?: never;
             links?: never;
             inlineBlocks: I[];
@@ -81,7 +85,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks?: never;
             links: L[];
             inlineBlocks: I[];
@@ -99,7 +103,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
             links?: never;
             inlineBlocks: I[];
@@ -116,7 +120,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
             links: L[];
             inlineBlocks?: never;
@@ -134,7 +138,7 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
   | {
       /** The actual [field value](https://www.datocms.com/docs/structured-text/dast) you get from a DatoCMS Structured Text field */
       data:
-        | (Omit<StructuredText<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
+        | (Omit<CdaStructuredTextValue<B, L, I>, 'blocks' | 'links' | 'inlineBlocks'> & {
             blocks: B[];
             links: L[];
             inlineBlocks: I[];
@@ -152,9 +156,9 @@ type Props<B extends DatocmsRecord, L extends DatocmsRecord, I extends DatocmsRe
     };
 
 export function ensureValidStructuredTextProps<
-  B extends DatocmsRecord = DatocmsRecord,
-  L extends DatocmsRecord = DatocmsRecord,
-  I extends DatocmsRecord = DatocmsRecord,
+  B extends CdaStructuredTextRecord = CdaStructuredTextRecord,
+  L extends CdaStructuredTextRecord = CdaStructuredTextRecord,
+  I extends CdaStructuredTextRecord = CdaStructuredTextRecord,
 >(props: Props<B, L, I>): Props<B, L, I> {
   return props;
 }

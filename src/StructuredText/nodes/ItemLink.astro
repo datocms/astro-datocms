@@ -1,6 +1,6 @@
 ---
 import {
-  type Record as DatocmsRecord,
+  type CdaStructuredTextRecord,
   RenderError,
   type ItemLink,
 } from 'datocms-structured-text-utils';
@@ -11,8 +11,12 @@ import { defaultMetaTransformer } from 'datocms-structured-text-generic-html-ren
 
 interface Props {
   node: ItemLink;
-  record: DatocmsRecord;
-  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
+  record: CdaStructuredTextRecord;
+  linkToRecordComponents?: LinkToRecordComponents<
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord
+  >;
 }
 
 const { node, record, linkToRecordComponents } = Astro.props;

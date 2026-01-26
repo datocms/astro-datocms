@@ -1,6 +1,6 @@
 ---
 import {
-  type Record as DatocmsRecord,
+  type CdaStructuredTextRecord,
   RenderError,
   type Block,
 } from 'datocms-structured-text-utils';
@@ -8,8 +8,12 @@ import type { BlockComponents } from '../types';
 
 interface Props {
   node: Block;
-  block: DatocmsRecord;
-  blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
+  block: CdaStructuredTextRecord;
+  blockComponents?: BlockComponents<
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord
+  >;
 }
 
 const { node, block, blockComponents } = Astro.props;

@@ -2,7 +2,7 @@
 import {
   type Block,
   type InlineBlock,
-  type Record as DatocmsRecord,
+  type CdaStructuredTextRecord,
   type InlineItem,
   type ItemLink,
   type Node as DastNode,
@@ -44,14 +44,30 @@ import type {
 interface Props {
   node: DastNode;
 
-  blocks?: DatocmsRecord[];
-  inlineBlocks?: DatocmsRecord[];
-  links?: DatocmsRecord[];
+  blocks?: CdaStructuredTextRecord[];
+  inlineBlocks?: CdaStructuredTextRecord[];
+  links?: CdaStructuredTextRecord[];
 
-  blockComponents?: BlockComponents<DatocmsRecord, DatocmsRecord>;
-  inlineBlockComponents?: InlineBlockComponents<DatocmsRecord, DatocmsRecord>;
-  linkToRecordComponents?: LinkToRecordComponents<DatocmsRecord, DatocmsRecord>;
-  inlineRecordComponents?: InlineRecordComponents<DatocmsRecord, DatocmsRecord>;
+  blockComponents?: BlockComponents<
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord
+  >;
+  inlineBlockComponents?: InlineBlockComponents<
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord
+  >;
+  linkToRecordComponents?: LinkToRecordComponents<
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord
+  >;
+  inlineRecordComponents?: InlineRecordComponents<
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord,
+    CdaStructuredTextRecord
+  >;
 
   nodeOverrides?: NodeOverrides;
   markOverrides?: MarkOverrides;
