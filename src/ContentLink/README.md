@@ -31,6 +31,7 @@ Visual Editing transforms how editors interact with your content by letting them
   - [Step 2: Add the ContentLink component](#step-2-add-the-contentlink-component)
 - [Usage](#usage)
 - [Props](#props)
+  - [`enableClickToEdit` options](#enableclicktoedit-options)
 - [StructuredText integration](#structuredtext-integration)
   - [Edit groups with `data-datocms-content-link-group`](#edit-groups-with-data-datocms-content-link-group)
   - [Edit boundaries with `data-datocms-content-link-boundary`](#edit-boundaries-with-data-datocms-content-link-boundary)
@@ -149,10 +150,10 @@ You get the full Visual Editing experience regardless of your routing setup.
 
 When passing an options object to `enableClickToEdit`, the following properties are available:
 
-| Option                   | Type      | Default | Description                                                                                                                                                                                           |
-| ------------------------ | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scrollToNearestTarget`  | `boolean` | `false` | Automatically scroll to the nearest editable element if none is currently visible in the viewport when click-to-edit mode is enabled                                                                  |
-| `hoverOnly`              | `boolean` | `false` | Only enable click-to-edit on devices that support hover (non-touch). Uses `window.matchMedia('(hover: hover)')` to detect hover capability. On touch devices, users can still toggle with Alt/Option |
+| Option                  | Type      | Default | Description                                                                                                                                                                                          |
+| ----------------------- | --------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scrollToNearestTarget` | `boolean` | `false` | Automatically scroll to the nearest editable element if none is currently visible in the viewport when click-to-edit mode is enabled                                                                 |
+| `hoverOnly`             | `boolean` | `false` | Only enable click-to-edit on devices that support hover (non-touch). Uses `window.matchMedia('(hover: hover)')` to detect hover capability. On touch devices, users can still toggle with Alt/Option |
 
 **Examples:**
 
