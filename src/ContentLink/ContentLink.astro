@@ -104,6 +104,7 @@ const enableClickToEditValue =
 <script>
   import { createController } from '@datocms/content-link';
   import { navigate } from 'astro:transitions/client';
+  import type { ClickToEditOptions } from './ContentLink.astro';
 
   class DatoCMSContentLink extends HTMLElement {
     private controller: ReturnType<typeof createController> | null = null;
@@ -123,7 +124,7 @@ const enableClickToEditValue =
       const stripStegaAttr = this.getAttribute('data-strip-stega');
 
       const enableClickToEdit = enableClickToEditAttr
-        ? JSON.parse(enableClickToEditAttr)
+        ? (JSON.parse(enableClickToEditAttr) as boolean | ClickToEditOptions)
         : undefined;
       const stripStega = stripStegaAttr === 'true';
 
@@ -174,22 +175,19 @@ const enableClickToEditValue =
       // Enable click-to-edit mode if requested via prop.
       // Never enable when running inside an iframe (e.g. the DatoCMS Web Previews plugin),
       // because the plugin already manages its own editing experience.
-      const isInIframe = window.self !== window.top;
-
-      if (enableClickToEdit && !isInIframe) {
-        // Check if hoverOnly is set and device doesn't support hover
-        const hoverOnly = typeof enableClickToEdit === 'object' && enableClickToEdit.hoverOnly;
-
-        if (!hoverOnly || window.matchMedia('(hover: hover)').matches) {
-          if (enableClickToEdit === true) {
-            this.controller.enableClickToEdit();
-          } else {
-            this.controller.enableClickToEdit(enableClickToEdit);
-          }
-        }
+      if (
+        enableClickToEdit &&
+        window.self === window.top &&
+        (enableClickToEdit === true ||
+          !enableClickToEdit.hoverOnly ||
+          window.matchMedia('(hover: hover)').matches)
+      ) {
+        this.controller.enableClickToEdit(
+          enableClickToEdit === true
+            ? undefined
+            : { scrollToNearestTarget: enableClickToEdit.scrollToNearestTarget ?? false },
+        );
       }
-      // Otherwise, click-to-edit overlays are not enabled by default.
-      // Users can press and hold Alt/Option key to temporarily enable click-to-edit mode
     }
 
     private cleanup() {
