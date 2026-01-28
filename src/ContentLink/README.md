@@ -44,6 +44,7 @@ Visual Editing transforms how editors interact with your content by letting them
   - [Click-to-edit overlays not appearing](#click-to-edit-overlays-not-appearing)
   - [Navigation not syncing in Web Previews plugin](#navigation-not-syncing-in-web-previews-plugin)
   - [Content inside StructuredText not clickable](#content-inside-structuredtext-not-clickable)
+  - [Layout issues caused by stega encoding](#layout-issues-caused-by-stega-encoding)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -382,3 +383,7 @@ If structured text content isn't opening the editor:
 
 3. **Verify stega encoding is present:**
    Use the browser inspector to check if the structured text HTML contains zero-width characters (stega encoding). If not, check your query options.
+
+### Layout issues caused by stega encoding
+
+The invisible zero-width characters can cause unexpected letter-spacing or text breaking out of containers. To fix this, either use `stripStega: true`, or use CSS: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`. This attribute is automatically added to elements with stega-encoded content when `stripStega: false` (the default).
