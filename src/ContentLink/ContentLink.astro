@@ -171,8 +171,12 @@ const enableClickToEditValue =
       };
       document.addEventListener('astro:page-load', this.pageLoadHandler);
 
-      // Enable click-to-edit mode if requested via prop
-      if (enableClickToEdit) {
+      // Enable click-to-edit mode if requested via prop.
+      // Never enable when running inside an iframe (e.g. the DatoCMS Web Previews plugin),
+      // because the plugin already manages its own editing experience.
+      const isInIframe = window.self !== window.top;
+
+      if (enableClickToEdit && !isInIframe) {
         // Check if hoverOnly is set and device doesn't support hover
         const hoverOnly = typeof enableClickToEdit === 'object' && enableClickToEdit.hoverOnly;
 
