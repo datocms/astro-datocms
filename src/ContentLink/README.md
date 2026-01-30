@@ -32,12 +32,19 @@ Visual Editing transforms how editors interact with your content by letting them
 - [Usage](#usage)
 - [Props](#props)
   - [`enableClickToEdit` options](#enableclicktoedit-options)
-- [StructuredText integration](#structuredtext-integration)
-  - [Edit groups with `data-datocms-content-link-group`](#edit-groups-with-data-datocms-content-link-group)
-  - [Edit boundaries with `data-datocms-content-link-boundary`](#edit-boundaries-with-data-datocms-content-link-boundary)
-- [Manual overlays](#manual-overlays)
-  - [Using `data-datocms-content-link-url`](#using-data-datocms-content-link-url)
-  - [Using `data-datocms-content-link-source`](#using-data-datocms-content-link-source)
+- [Data attributes reference](#data-attributes-reference)
+  - [Developer-specified attributes](#developer-specified-attributes)
+    - [`data-datocms-content-link-url`](#data-datocms-content-link-url)
+    - [`data-datocms-content-link-source`](#data-datocms-content-link-source)
+    - [`data-datocms-content-link-group`](#data-datocms-content-link-group)
+    - [`data-datocms-content-link-boundary`](#data-datocms-content-link-boundary)
+  - [Library-managed attributes](#library-managed-attributes)
+    - [`data-datocms-contains-stega`](#data-datocms-contains-stega)
+    - [`data-datocms-auto-content-link-url`](#data-datocms-auto-content-link-url)
+- [How group and boundary resolution works](#how-group-and-boundary-resolution-works)
+- [Structured Text fields](#structured-text-fields)
+  - [Rule 1: Always wrap the Structured Text component in a group](#rule-1-always-wrap-the-structured-text-component-in-a-group)
+  - [Rule 2: Wrap embedded blocks, inline blocks, and inline records in a boundary](#rule-2-wrap-embedded-blocks-inline-blocks-and-inline-records-in-a-boundary)
 - [Low-level utilities](#low-level-utilities)
   - [`stripStega()` works with any data type](#stripstega-works-with-any-data-type)
 - [Troubleshooting](#troubleshooting)
@@ -174,73 +181,17 @@ When passing an options object to `enableClickToEdit`, the following properties 
 
 The `hoverOnly` option is particularly useful for websites that receive traffic from both desktop and mobile users. On touch devices, the click-to-edit overlays can interfere with normal scrolling and tapping behavior. By setting `hoverOnly: true`, overlays will only appear automatically on devices with a mouse or trackpad, while touch device users can still access click-to-edit mode by pressing and holding the Alt/Option key.
 
-## StructuredText integration
+## Data attributes reference
 
-When working with DatoCMS's [Structured Text fields](https://www.datocms.com/docs/structured-text/dast), you may want more control over which areas are clickable.
+This library uses several `data-datocms-*` attributes. Some are **developer-specified** (you add them to your markup), and some are **library-managed** (added automatically during DOM stamping). Here's a complete reference.
 
-### Edit groups with `data-datocms-content-link-group`
+### Developer-specified attributes
 
-By default, only the specific element containing stega-encoded data is clickable. For Structured Text fields, this might be a single `<span>` inside a paragraph, which creates a poor editing experience.
+These attributes are added by you in your templates/components to control how editable regions behave.
 
-Use the `data-datocms-content-link-group` attribute to make a larger area clickable:
+#### `data-datocms-content-link-url`
 
-```astro
----
-import { StructuredText } from '@datocms/astro/StructuredText';
----
-
-<!-- Make the entire structured text area clickable -->
-<div data-datocms-content-link-group>
-  <StructuredText data={content.structuredTextField} />
-</div>
-```
-
-Now editors can click anywhere within the structured text content to open the field editor.
-
-### Edit boundaries with `data-datocms-content-link-boundary`
-
-When Structured Text contains embedded blocks or inline records, you typically want:
-
-- Main text content (paragraphs, headings, lists) to open the Structured Text field editor
-- Embedded blocks to open their own specific record editor
-
-Use `data-datocms-content-link-boundary` to prevent click events from bubbling up past a certain point:
-
-```astro
----
-import { StructuredText } from '@datocms/astro/StructuredText';
-import BlogPost from './BlogPost.astro';
----
-
-<div data-datocms-content-link-group>
-  <StructuredText
-    data={content.structuredTextField}
-    components={{
-      renderBlock: ({ record }) => {
-        // This boundary prevents the block from using the parent group
-        return (
-          <div data-datocms-content-link-boundary>
-            <BlogPost data={record} />
-          </div>
-        );
-      },
-    }}
-  />
-</div>
-```
-
-This ensures:
-
-- Clicking the main text opens the Structured Text field editor
-- Clicking an embedded block opens that specific block's editor
-
-## Manual overlays
-
-In some cases, you may want to manually create click-to-edit overlays for content that doesn't have stega encoding.
-
-### Using `data-datocms-content-link-url`
-
-You can add the `data-datocms-content-link-url` attribute with a DatoCMS editing URL:
+Manually marks an element as editable with an explicit edit URL. Use this for non-text fields (booleans, numbers, dates, JSON) that cannot contain stega encoding. The recommended approach is to use the `_editingUrl` field available on all records:
 
 ```graphql
 query {
@@ -248,37 +199,271 @@ query {
     id
     price
     isActive
-    inStock
     _editingUrl
   }
 }
 ```
 
 ```astro
-<div>
-  <span data-datocms-content-link-url={product._editingUrl}>
-    ${product.price}
-  </span>
+<span data-datocms-content-link-url={product._editingUrl}>
+  ${product.price}
+</span>
+```
 
-  <span data-datocms-content-link-url={product._editingUrl}>
-    {product.inStock ? 'In Stock' : 'Out of Stock'}
-  </span>
+#### `data-datocms-content-link-source`
+
+Attaches stega-encoded metadata without the need to render it as content. Useful for structural elements that cannot contain text (like `<video>`, `<audio>`, `<iframe>`, etc.) or when stega encoding in visible text would be problematic:
+
+```astro
+<div data-datocms-content-link-source={video.alt}>
+  <video src={video.url} poster={video.posterImage.url} controls></video>
 </div>
 ```
 
-### Using `data-datocms-content-link-source`
+The value must be a stega-encoded string (any text field from the API will work). The library decodes the stega metadata from the attribute value and makes the element clickable to edit.
 
-For elements without visible stega-encoded content, use the [`data-datocms-content-link-source`](https://github.com/datocms/content-link?tab=readme-ov-file#stamping-elements-via-data-datocms-content-link-source) attribute to attach stega metadata directly:
+#### `data-datocms-content-link-group`
 
-```astro
-<!-- product.asset.video.alt contains stega-encoded info -->
-<video
-  src={product.asset.video.url}
-  data-datocms-content-link-source={product.asset.video.alt}
-  controls></video>
+Expands the clickable area to a parent element. When the library encounters stega-encoded content, by default it makes the immediate parent of the text node clickable to edit. Adding this attribute to an ancestor makes that ancestor the clickable target instead:
+
+```html
+<article data-datocms-content-link-group>
+  <!-- product.title contains stega encoding -->
+  <h2>{product.title}</h2>
+  <p>${product.price}</p>
+</article>
 ```
 
-This is useful for structural elements like `<video>`, `<audio>`, or `<iframe>` where stega encoding in visible text would be problematic.
+Here, clicking anywhere in the `<article>` opens the editor, rather than requiring users to click precisely on the `<h2>`.
+
+**Important:** A group should contain only one stega-encoded source. If multiple stega strings resolve to the same group, the library logs a collision warning and only the last URL wins.
+
+#### `data-datocms-content-link-boundary`
+
+Stops the upward DOM traversal that looks for a `data-datocms-content-link-group`, making the element where stega was found the clickable target instead. This creates an independent editable region that won't merge into a parent group (see [How group and boundary resolution works](#how-group-and-boundary-resolution-works) below for details):
+
+```html
+<div data-datocms-content-link-group>
+  <!-- page.title contains stega encoding → resolves to URL A -->
+  <h1>{page.title}</h1>
+  <section data-datocms-content-link-boundary>
+    <!-- page.author contains stega encoding → resolves to URL B -->
+    <span>{page.author}</span>
+  </section>
+</div>
+```
+
+Without the boundary, clicking `page.author` would open URL A (the outer group). With the boundary, the `<span>` becomes the clickable target opening URL B.
+
+The boundary can also be placed directly on the element that contains the stega text:
+
+```html
+<div data-datocms-content-link-group>
+  <!-- page.title contains stega encoding → resolves to URL A -->
+  <h1>{page.title}</h1>
+  <!-- page.author contains stega encoding → resolves to URL B -->
+  <span data-datocms-content-link-boundary>{page.author}</span>
+</div>
+```
+
+Here, the `<span>` has the boundary and directly contains the stega text, so the `<span>` itself becomes the clickable target (since the starting element and the boundary element are the same).
+
+### Library-managed attributes
+
+These attributes are added automatically by the library during DOM stamping. You do not need to add them yourself, but you can target them in CSS or JavaScript.
+
+#### `data-datocms-contains-stega`
+
+Added to elements whose text content contains stega-encoded invisible characters. This attribute is only present when `stripStega` is `false` (the default), since with `stripStega: true` the characters are removed entirely. Useful for CSS workarounds — the zero-width characters can sometimes cause unexpected letter-spacing or text overflow:
+
+```css
+[data-datocms-contains-stega] {
+  letter-spacing: 0 !important;
+}
+```
+
+#### `data-datocms-auto-content-link-url`
+
+Added automatically to elements that the library has identified as editable targets (through stega decoding and group/boundary resolution). Contains the resolved edit URL.
+
+This is the automatic counterpart to the developer-specified `data-datocms-content-link-url`. The library adds `data-datocms-auto-content-link-url` wherever it can extract an edit URL from stega encoding, while `data-datocms-content-link-url` is needed for non-text fields (booleans, numbers, dates, etc.) where stega encoding cannot be embedded. Both attributes are used by the click-to-edit overlay system to determine which elements are clickable and where they link to.
+
+## How group and boundary resolution works
+
+When the library encounters stega-encoded content inside an element, it walks up the DOM tree from that element:
+
+1. If it finds a `data-datocms-content-link-group`, it stops and stamps **that** element as the clickable target.
+2. If it finds a `data-datocms-content-link-boundary`, it stops and stamps the **starting element** as the clickable target — further traversal is prevented.
+3. If it reaches the root without finding either, it stamps the **starting element**.
+
+Here are some concrete examples to illustrate:
+
+**Example 1: Nested groups**
+
+```html
+<div data-datocms-content-link-group>
+  <!-- page.title contains stega encoding → resolves to URL A -->
+  <h1>{page.title}</h1>
+  <div data-datocms-content-link-group>
+    <!-- page.subtitle contains stega encoding → resolves to URL B -->
+    <p>{page.subtitle}</p>
+  </div>
+</div>
+```
+
+- **`page.title`**: walks up from `<h1>`, finds the outer group → the **outer `<div>`** becomes clickable (opens URL A).
+- **`page.subtitle`**: walks up from `<p>`, finds the inner group first → the **inner `<div>`** becomes clickable (opens URL B). The outer group is never reached.
+
+Each nested group creates an independent clickable region. The innermost group always wins for its own content.
+
+**Example 2: Boundary preventing group propagation**
+
+```html
+<div data-datocms-content-link-group>
+  <!-- page.title contains stega encoding → resolves to URL A -->
+  <h1>{page.title}</h1>
+  <section data-datocms-content-link-boundary>
+    <!-- page.author contains stega encoding → resolves to URL B -->
+    <span>{page.author}</span>
+  </section>
+</div>
+```
+
+- **`page.title`**: walks up from `<h1>`, finds the outer group → the **outer `<div>`** becomes clickable (opens URL A).
+- **`page.author`**: walks up from `<span>`, hits the `<section>` boundary → traversal stops, the **`<span>`** itself becomes clickable (opens URL B). The outer group is not reached.
+
+**Example 3: Boundary inside a group**
+
+```html
+<div data-datocms-content-link-group>
+  <!-- page.description contains stega encoding → resolves to URL A -->
+  <p>{page.description}</p>
+  <div data-datocms-content-link-boundary>
+    <!-- page.footnote contains stega encoding → resolves to URL B -->
+    <p>{page.footnote}</p>
+  </div>
+</div>
+```
+
+- **`page.description`**: walks up from `<p>`, finds the outer group → the **outer `<div>`** becomes clickable (opens URL A).
+- **`page.footnote`**: walks up from `<p>`, hits the boundary → traversal stops, the **`<p>`** itself becomes clickable (opens URL B). The outer group is not reached.
+
+**Example 4: Multiple stega strings without groups (collision warning)**
+
+```html
+<p>
+  <!-- Both product.name and product.tagline contain stega encoding -->
+  {product.name} {product.tagline}
+</p>
+```
+
+Both stega-encoded strings resolve to the same `<p>` element. The library logs a console warning and the last URL wins. To fix this, wrap each piece of content in its own element:
+
+```html
+<p>
+  <span>{product.name}</span>
+  <span>{product.tagline}</span>
+</p>
+```
+
+## Structured Text fields
+
+Structured Text fields require special attention because of how stega encoding works within them:
+
+- The DatoCMS API encodes stega information inside a single `<span>` within the structured text output. Without any configuration, only that small span would be clickable.
+- Structured Text fields can contain **embedded blocks** and **inline records**, each with their own editing URL that should open a different record in the editor.
+
+Here are the rules to follow:
+
+### Rule 1: Always wrap the Structured Text component in a group
+
+This makes the entire structured text area clickable, instead of just the tiny stega-encoded span:
+
+```astro
+---
+import { StructuredText } from '@datocms/astro/StructuredText';
+---
+
+<div data-datocms-content-link-group>
+  <StructuredText data={page.content} />
+</div>
+```
+
+### Rule 2: Wrap embedded blocks, inline blocks, and inline records in a boundary
+
+Embedded blocks, inline blocks, and inline records have their own edit URL (pointing to the block/record). Without a boundary, clicking them would bubble up to the parent group and open the structured text field editor instead. Add `data-datocms-content-link-boundary` to prevent them from merging into the parent group.
+
+**Note:** Record links (`renderLinkToRecord`) don't need a boundary. They are typically just `<a>` tags wrapping text that already belongs to the surrounding structured text. Since they don't introduce a separate editing target, there's no URL collision and no reason to isolate them from the parent group — clicking a record link's text should open the structured text field editor, just like clicking any other text in the field.
+
+Add `data-datocms-content-link-boundary` to the root element of each component that renders a block, inline block, or inline record. For example, given a `Cta` block component:
+
+```astro
+---
+// src/components/Cta.astro
+const { block } = Astro.props;
+---
+
+<div data-datocms-content-link-boundary>
+  <a href={block.url}>{block.label}</a>
+</div>
+```
+
+For inline blocks, use a `<span>` instead of a `<div>` since they appear within inline content:
+
+```astro
+---
+// src/components/NewsletterSignup.astro
+const { block } = Astro.props;
+---
+
+<span data-datocms-content-link-boundary>
+  <input type="email" placeholder={block.placeholder} />
+</span>
+```
+
+Same for inline records:
+
+```astro
+---
+// src/components/InlineTeamMember.astro
+const { record } = Astro.props;
+---
+
+<span data-datocms-content-link-boundary>
+  <a href={`/team/${record.slug}`}>{record.name}</a>
+</span>
+```
+
+Then use these components directly in your structured text rendering:
+
+```astro
+---
+import { StructuredText } from '@datocms/astro/StructuredText';
+import Cta from '~/components/Cta.astro';
+import NewsletterSignup from '~/components/NewsletterSignup.astro';
+import InlineTeamMember from '~/components/InlineTeamMember.astro';
+---
+
+<div data-datocms-content-link-group>
+  <StructuredText
+    data={page.content}
+    blockComponents={{
+      CtaRecord: Cta,
+    }}
+    inlineBlockComponents={{
+      NewsletterSignupRecord: NewsletterSignup,
+    }}
+    inlineRecordComponents={{
+      TeamMemberRecord: InlineTeamMember,
+    }}
+  />
+</div>
+```
+
+With this setup:
+
+- Clicking the main text (paragraphs, headings, lists) opens the **structured text field editor**
+- Clicking an embedded block, inline block, or inline record opens **that block/record's editor**
 
 ## Low-level utilities
 
@@ -371,19 +556,17 @@ If navigation isn't syncing between your preview and the DatoCMS interface:
 If structured text content isn't opening the editor:
 
 1. **Wrap with `data-datocms-content-link-group`:**
+   See [Rule 1: Always wrap the Structured Text component in a group](#rule-1-always-wrap-the-structured-text-component-in-a-group).
 
-   ```astro
-   <div data-datocms-content-link-group>
-     <StructuredText data={content.body} />
-   </div>
-   ```
+2. **Add boundaries for embedded blocks and inline records:**
+   See [Rule 2: Wrap embedded blocks and inline records in a boundary](#rule-2-wrap-embedded-blocks-and-inline-records-in-a-boundary).
 
-2. **Check for `data-datocms-content-link-boundary` blocking clicks:**
+3. **Check for `data-datocms-content-link-boundary` blocking clicks:**
    Make sure you haven't accidentally added a boundary attribute that's preventing the click from reaching the group.
 
-3. **Verify stega encoding is present:**
+4. **Verify stega encoding is present:**
    Use the browser inspector to check if the structured text HTML contains zero-width characters (stega encoding). If not, check your query options.
 
 ### Layout issues caused by stega encoding
 
-The invisible zero-width characters can cause unexpected letter-spacing or text breaking out of containers. To fix this, either use `stripStega: true`, or use CSS: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`. This attribute is automatically added to elements with stega-encoded content when `stripStega: false` (the default).
+The invisible zero-width characters can cause unexpected letter-spacing or text breaking out of containers. To fix this, either use `stripStega: true`, or use CSS: `[data-datocms-contains-stega] { letter-spacing: 0 !important; }`. This attribute is automatically added to elements with stega-encoded content when `stripStega: false` (the default). See [`data-datocms-contains-stega`](#data-datocms-contains-stega) for more details.
