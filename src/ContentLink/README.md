@@ -153,6 +153,7 @@ You get the full Visual Editing experience regardless of your routing setup.
 | ------------------- | --------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `enableClickToEdit` | `boolean \| { scrollToNearestTarget?: boolean; hoverOnly?: boolean }` | -       | Enable click-to-edit overlays on mount. Use `true` for immediate activation, or pass options object (see below)                           |
 | `stripStega`        | `boolean`                                                             | `false` | Strip stega-encoded invisible characters from text content. When `true`, encoding is permanently removed (prevents controller recreation) |
+| `hue`               | `number`                                                              | `17`    | Hue (0–359) of the overlay accent color. Default is the DatoCMS hue (`17`). Use this to match your brand or project colors                |
 
 ### `enableClickToEdit` options
 

@@ -80,9 +80,16 @@ export interface Props {
    * @default false
    */
   stripStega?: boolean;
+
+  /**
+   * Hue (0–359) of the overlay accent color.
+   *
+   * @default 17 (orange)
+   */
+  hue?: number;
 }
 
-const { enableClickToEdit, stripStega = false } = Astro.props;
+const { enableClickToEdit, stripStega = false, hue } = Astro.props;
 
 // Serialize props for client-side script
 const enableClickToEditValue =
@@ -98,6 +105,7 @@ const enableClickToEditValue =
     ? JSON.stringify(enableClickToEditValue)
     : undefined}
   data-strip-stega={stripStega ? 'true' : undefined}
+  data-hue={hue !== undefined ? String(hue) : undefined}
 >
 </datocms-content-link>
 
@@ -127,6 +135,8 @@ const enableClickToEditValue =
         ? (JSON.parse(enableClickToEditAttr) as boolean | ClickToEditOptions)
         : undefined;
       const stripStega = stripStegaAttr === 'true';
+      const hueAttr = this.getAttribute('data-hue');
+      const hue = hueAttr !== null ? Number(hueAttr) : undefined;
 
       // Initialize the content-link controller
       this.controller = createController({
@@ -138,6 +148,8 @@ const enableClickToEditValue =
         },
         // Strip stega encoding if requested
         stripStega: stripStega,
+        // Accent color hue for overlays
+        hue: hue,
       });
 
       // Notify the controller of the current path
