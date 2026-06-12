@@ -50,7 +50,13 @@ export type ImageProps = {
   /** Whether the component should use a blurred image placeholder */
   usePlaceholder?: boolean;
   /**
-   * The HTML5 `sizes` attribute for the image
+   * The HTML5 `sizes` attribute for the image.
+   *
+   * When omitted, it falls back to `data.sizes`, and then to `sizes="auto"` for
+   * lazy-loaded (non-`priority`) images. With `sizes="auto"` the browser selects
+   * the most appropriate `srcset` candidate based on the image's actual rendered
+   * width, with no need to hand-author a `sizes` string. Browsers that don't
+   * support `sizes="auto"` fall back to the `100vw` default.
    *
    * Learn more about srcset and sizes:
    * -> https://web.dev/learn/design/responsive-images/#sizes
