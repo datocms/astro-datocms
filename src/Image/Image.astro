@@ -44,19 +44,22 @@ const sizingStyle = {
 // When no explicit `sizes` is given (neither via prop nor from the
 // `responsiveImage` query), let the browser pick the optimal `srcset`
 // candidate from the image's actual rendered width via `sizes="auto"`.
-// `sizes="auto"` is only valid on lazy-loaded images, so we skip it for
-// `priority` images (which render eagerly above the fold). Browsers without
-// `sizes="auto"` support treat it as invalid and fall back to the `100vw`
-// default, matching the previous behavior.
-const resolvedSizes = sizes ?? data.sizes ?? (priority ? null : 'auto');
+//
+// Per the HTML spec, `sizes="auto"` only engages when the `<img>` element
+// itself "allows auto-sizes": it must be `loading="lazy"` AND carry a `sizes`
+// attribute that is (or starts with) `auto`. For a `<source>`, the keyword
+// only takes effect when its sibling `<img>` allows auto-sizes. That's why we
+// apply `resolvedSizes` to BOTH the `<source>` elements and the `<img>` below
+// (the `<img>` has no `srcset`, so a non-`auto` value there is simply ignored).
+//
+// We skip it for `priority` images, which render eagerly (auto is invalid
+// without lazy loading). The `, 100vw` fallback keeps the previous behavior on
+// browsers without `sizes="auto"` support, which treat `auto` as invalid.
+const resolvedSizes = sizes ?? data.sizes ?? (priority ? null : 'auto, 100vw');
 ---
 
 <picture class={pictureClass} style={pictureStyle} data-datocms-image="true">
-  {
-    data.webpSrcSet && (
-      <source srcset={data.webpSrcSet} sizes={resolvedSizes} type="image/webp" />
-    )
-  }
+  {data.webpSrcSet && <source srcset={data.webpSrcSet} sizes={resolvedSizes} type="image/webp" />}
   <source
     srcset={data.srcSet ?? buildSrcSet(data.src, data.width, srcSetCandidates) ?? null}
     sizes={resolvedSizes}
@@ -67,6 +70,7 @@ const resolvedSizes = sizes ?? data.sizes ?? (priority ? null : 'auto');
         src={data.src}
         alt={data.alt ?? ''}
         title={data.title ?? null}
+        sizes={resolvedSizes}
         fetchpriority={priority ? 'high' : undefined}
         loading={priority ? undefined : 'lazy'}
         referrerpolicy={referrerPolicy}
