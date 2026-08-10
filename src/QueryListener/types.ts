@@ -9,4 +9,6 @@ export type QueryListenerOptions<QueryResult, QueryVariables> = Omit<
   | 'onEvent'
   | 'fetcher'
   | 'eventSourceClass'
->;
+> & {
+  reloadDelayMs?: number;
+};

@@ -19,6 +19,7 @@ const stringifiedQuery = typeof query === 'object' ? print(query) : query;
   class QueryListener extends HTMLElement {
     config: QueryListenerOptions<unknown, unknown>;
     updatesReceived: number = 0;
+    reloadTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
       super();
@@ -41,7 +42,16 @@ const stringifiedQuery = typeof query === 'object' ? print(query) : query;
           this.updatesReceived += 1;
 
           if (this.updatesReceived > 1) {
-            document.location.reload();
+            const delay = this.config.reloadDelayMs ?? 2000;
+
+            if (this.reloadTimeout !== null) {
+              clearTimeout(this.reloadTimeout);
+            }
+
+            this.reloadTimeout = setTimeout(() => {
+              this.reloadTimeout = null;
+              document.location.reload();
+            }, delay);
           }
         },
         onChannelError: (error) => {
