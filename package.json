@@ -6,7 +6,7 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "git://github.com/datocms/astro-datocms.git"
+    "url": "git+https://github.com/datocms/astro-datocms.git"
   },
   "homepage": "https://github.com/datocms/astro-datocms",
   "license": "MIT",
@@ -58,6 +58,7 @@
     "astro": "^5.16.15",
     "doctoc": "^2.2.1",
     "np": "^10.0.7",
+    "pkg-pr-new": "^0.0.88",
     "prettier": "^3.3.3",
     "prettier-plugin-astro": "^0.14.1",
     "simple-git-hooks": "^2.11.1",
