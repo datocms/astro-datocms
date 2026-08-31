@@ -28,7 +28,10 @@
     "build": "npx astro check",
     "format": "npm run toc && npx prettier . --write",
     "toc": "doctoc --github README.md src",
-    "test": "echo 1"
+    "test": "echo 1",
+    "changeset": "changeset",
+    "release": "release-toolchain",
+    "release:next": "release-toolchain --tag next"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -42,7 +45,8 @@
     "node": ">=18.0.0"
   },
   "files": [
-    "src"
+    "src",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.7",
@@ -55,9 +59,10 @@
     "astro": "*"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.1",
+    "@datocms/release-toolchain": "github:datocms/release-toolchain#v1.0.0",
     "astro": "^5.16.15",
     "doctoc": "^2.2.1",
-    "np": "^10.0.7",
     "pkg-pr-new": "^0.0.88",
     "prettier": "^3.3.3",
     "prettier-plugin-astro": "^0.14.1",
