@@ -1,9 +1,10 @@
 ---
 // Renders code nodes with Astro's <Code>, which bundles Shiki (~11 MB of
 // grammars and themes). Sites that need a small server bundle can import
-// `@datocms/astro/StructuredText/Plain` instead, which never reaches this file.
+// `@datocms/astro/StructuredText/WithoutSyntaxHighlighting` instead, which
+// never reaches this file.
 import HighlightedCode from './nodes/Code.astro';
-import PlainStructuredText from './PlainStructuredText.astro';
+import StructuredTextWithoutSyntaxHighlighting from './StructuredTextWithoutSyntaxHighlighting.astro';
 import type { StructuredTextProps } from './types';
 
 type Props = StructuredTextProps;
@@ -11,4 +12,7 @@ type Props = StructuredTextProps;
 const { nodeOverrides, ...rest } = Astro.props;
 ---
 
-<PlainStructuredText {...rest} nodeOverrides={{ code: HighlightedCode, ...nodeOverrides }} />
+<StructuredTextWithoutSyntaxHighlighting
+  {...rest}
+  nodeOverrides={{ code: HighlightedCode, ...nodeOverrides }}
+/>
