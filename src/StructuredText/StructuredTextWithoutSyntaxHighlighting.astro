@@ -1,0 +1,26 @@
+---
+import { isDocument, isNode, isCdaStructuredTextValue } from 'datocms-structured-text-utils';
+
+import Node from './Node.astro';
+import type { StructuredTextProps } from './types';
+
+type Props = StructuredTextProps;
+
+const { data, ...rest } = Astro.props;
+
+const node = !data
+  ? null
+  : isCdaStructuredTextValue(data) && isDocument(data.value)
+    ? data.value.document
+    : isDocument(data)
+      ? data.document
+      : isNode(data)
+        ? data
+        : undefined;
+
+const blocks = isCdaStructuredTextValue(data) ? data?.blocks : undefined;
+const inlineBlocks = isCdaStructuredTextValue(data) ? data?.inlineBlocks : undefined;
+const links = isCdaStructuredTextValue(data) ? data?.links : undefined;
+---
+
+{node && <Node {node} {blocks} {inlineBlocks} {links} {...rest} />}

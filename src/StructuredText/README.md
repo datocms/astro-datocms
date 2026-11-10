@@ -8,6 +8,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Setup](#setup)
+- [Without syntax highlighting](#without-syntax-highlighting)
 - [Basic usage](#basic-usage)
 - [Customization](#customization)
   - [Custom components for blocks, inline blocks, inline records or links to records](#custom-components-for-blocks-inline-blocks-inline-records-or-links-to-records)
@@ -24,6 +25,18 @@ Import the component like this:
 ```js
 import { StructuredText } from '@datocms/astro/StructuredText';
 ```
+
+### Without syntax highlighting
+
+By default, `code` nodes are syntax-highlighted with Astro's [`<Code />`](https://docs.astro.build/en/guides/syntax-highlighting/#code-) component. That component is built on [Shiki](https://shiki.style/), which adds about 11 MB of grammars and themes to your server bundle, even on pages that contain no code. This can matter on edge runtimes with a script size limit, such as [Bunny Edge Scripting](https://bunny.net/docs/scripting/limits).
+
+If you don't need syntax highlighting, import the component from `@datocms/astro/StructuredText/WithoutSyntaxHighlighting` instead:
+
+```js
+import { StructuredText } from '@datocms/astro/StructuredText/WithoutSyntaxHighlighting';
+```
+
+It has exactly the same API, but renders `code` nodes as plain `<pre data-language="…"><code>…</code></pre>`, and keeps Shiki out of your bundle. You can still plug in a lighter highlighter of your choice with [`nodeOverrides`](#override-default-rendering-of-nodes).
 
 ## Basic usage
 
