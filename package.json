@@ -38,6 +38,7 @@
     ".": "./src/index.ts",
     "./Image": "./src/Image/index.ts",
     "./StructuredText": "./src/StructuredText/index.ts",
+    "./StructuredText/Plain": "./src/StructuredText/plain.ts",
     "./Seo": "./src/Seo/index.ts",
     "./QueryListener": "./src/QueryListener/index.ts",
     "./ContentLink": "./src/ContentLink/index.ts"
